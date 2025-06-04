@@ -15,7 +15,7 @@ headers = {
 }
 
 def get_embedding(texts, model="embedding-embedding-001"):
-    data = {
+    data = { 
         "model": model,
         "type": "query",
         "texts": texts
@@ -27,6 +27,17 @@ def get_embedding(texts, model="embedding-embedding-001"):
 
 text_query = ["大模型", "AI"]
 res = get_embedding(text_query)
-# print(res)
+print(res)
+
+
+
+
+
+
+
+
+
+
+
 
 
