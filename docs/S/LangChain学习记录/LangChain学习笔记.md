@@ -2,7 +2,9 @@
 
 ## LangChain的定义
 
-LangChain 是一个开源的开发框架，皆在帮助开发者快速构建基于大模型(LLM)的应用程序，它通过模块化设计简化了与大模型交互的复杂性,支持灵活集成外部工具和数据源，使开发者能够高效实现复杂的AI应用逻辑。
+LangChain 是一个开源的开发框架，皆在帮助开发者快速构建基于大模型(LLM)的应用程序，它通过模块化设计简化了与大模型交互的复杂性,支持灵活集成外部工
+
+具和数据源，使开发者能够高效实现复杂的AI应用逻辑。
 
 ![image-20250525182647438](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/image-20250525182647438.png)
 
@@ -189,7 +191,9 @@ print(result)
 
 ## Prompt templates（提示词模版）
 
-语言模型以文本作为输入 - 这个文本通常被称为提示词（prompt）。在开发过程中，对于提示词通常不能直接硬编码，不利于提示词管理，而是通过提示词模版进行维护，类似开发过程中遇到的短信模版、邮件模版等等。
+语言模型以文本作为输入 - 这个文本通常被称为提示词（prompt）。在开发过程中，对于提示词通常不能直接硬编码，不利于提示词管理，而是通过提示词模版
+
+进行维护，类似开发过程中遇到的短信模版、邮件模版等等。
 
 ![image-20250525190108913](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/image-20250525190108913.png)
 
@@ -225,9 +229,13 @@ print(result)
 
 ## 聊天消息提示词模版(chat prompt template)
 
-聊天模型（Chat Model）以聊天消息列表作为输入，这个聊天消息列表的消息内容也可以通过提示词模版进行管理。这些聊天消息与原始字符串不同，因为每个消息都与“角色”相关联。
+聊天模型（Chat Model）以聊天消息列表作为输入，这个聊天消息列表的消息内容也可以通过提示词模版进行管理。这些聊天消息与原始字符串不同，因为每个
 
-例如，在OpenAI的Chat Completion API中，OpenAi的聊天模型，给不同的聊天消息定义了三种角色类型分别是助手(assistant)、人类 (human)、系统 (system)角色：
+消息都与“角色”相关联。
+
+例如，在OpenAI的Chat Completion API中，OpenAi的聊天模型，给不同的聊天消息定义了三种角色类型分别是助手(assistant)、人类 (human)、系统 (system)
+
+角色：
 
 - 助手(assistant)消息指的是当前消息是AI回答的内容。
 - 人类 (human)消息指的是你发给AI的内容。
@@ -283,7 +291,9 @@ print(messages)
 
 ## MessagesPlaceholder
 
-这个提示模版负责在特定位置添加消息列表，在上面ChatPromptTemplate中，我们看到了如何格式化两条消息，每条消息都是一个字符串。但是我们希望用户传入一个消息列表，我们将其插入到特定的位置，该怎么办？这就是使用MessagesPlaceholder的方式。
+这个提示模版负责在特定位置添加消息列表，在上面ChatPromptTemplate中，我们看到了如何格式化两条消息，每条消息都是一个字符串。但是我们希望用户传
+
+入一个消息列表，我们将其插入到特定的位置，该怎么办？这就是使用MessagesPlaceholder的方式。
 
 ```python
 from langchain_core.messages import HumanMessage
@@ -305,7 +315,9 @@ print(result)
 messages=[SystemMessage(content='你是一个人工智能助手', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好！', additional_kwargs={}, response_metadata={})]
 ```
 
-这将生成两条消息，第一条是系统消息，第二条是我们传入的HumanMessage。如果我们传入了5条消息，那么总共会生成6条消息(系统消息加上传入的5条消息)。这对于将一系列消息插入到特定位置非常有用。
+这将生成两条消息，第一条是系统消息，第二条是我们传入的HumanMessage。如果我们传入了5条消息，那么总共会生成6条消息(系统消息加上传入的5条息)。
+
+这对于将一系列消息插入到特定位置非常有用。
 
 另一种实现相同效果，使用placeholder：
 
@@ -329,7 +341,9 @@ messages=[SystemMessage(content='你是一个人工智能助手', additional_kwa
 
 ## 提示词追加示例（Few-shot prompt templates）
 
-提示词中包含交互样本的作用是为了帮助模型更好的理解用户的意图，从而更好的回答问题或执行任务。小样本提示模版是指使用一组少量的示例来指导模型处理新的输入。这些实例可以用来训练模型，以便模型可以更好的理解和回答类似的问题。
+提示词中包含交互样本的作用是为了帮助模型更好的理解用户的意图，从而更好的回答问题或执行任务。小样本提示模版是指使用一组少量的示例来指导模型处理
+
+新的输入。这些实例可以用来训练模型，以便模型可以更好的理解和回答类似的问题。
 
 ## 使用示例集
 
@@ -488,9 +502,13 @@ print(prompt.format(input="乔治·华盛顿的父亲是谁？"))
 
 ### 将示例提供给ExampleSelector
 
-重用前一部分中的示例集和提示词模版。但是，不会将示例直接提供给提示词追加示例对象，把全部示例插入到提示词中，而是将它们提供给一个ExampleSelector对象，插入部分示例。
+重用前一部分中的示例集和提示词模版。但是，不会将示例直接提供给提示词追加示例对象，把全部示例插入到提示词中，而是将它们提供给一个
 
-使用SemanticSimilarityExampleSelector类。根据与输入的相似性选择小样本示例。它使用嵌入模型计算输入和小样本示例之间的相关性，然后使用向量数据库执行相似搜索，获取跟输入相似的示例。
+ExampleSelector对象，插入部分示例。
+
+使用SemanticSimilarityExampleSelector类。根据与输入的相似性选择小样本示例。它使用嵌入模型计算输入和小样本示例之间的相关性，然后使用向量数据库
+
+执行相似搜索，获取跟输入相似的示例。
 
 - 这里涉及向量计算、向量数据库，在AI领域这两个主要用于数据相似度搜索。
 
@@ -561,7 +579,9 @@ print(prompt.format(input="乔治·华盛顿的父亲是谁？"))
 
 ## LCEL介绍
 
-LCEL(LangChain Expression Language)是一个强大的工作流编排工具，可以从基本组件构建复杂任务链条（chain），并支持诸如流式处理、并行处理和日志记录等开箱即用的功能。
+LCEL(LangChain Expression Language)是一个强大的工作流编排工具，可以从基本组件构建复杂任务链条（chain），并支持诸如流式处理、并行处理和日志记
+
+录等开箱即用的功能。
 
 LCEL从第一天就被设计为支持将原型投入生产，无需更改代码，从最简单的“提示+LLM”链到最复杂的链。以下是使用LCEL的几大亮点：
 
@@ -574,7 +594,9 @@ LCEL从第一天就被设计为支持将原型投入生产，无需更改代码�
 
 ## Ruable interface
 
-为了尽可能简化创建自定义链的过程，实现了一个Runable的协议，许多LangChain的组件都实现了Runable协议，包括聊天模型、LLMs、输出解析器、检索器、提示模版等等。此外，还有一些有用的基本组件可用于处理可运行对象。这是一个标准接口，可以轻松定义自定义链，并以标准方式调用。标准接口包括：
+为了尽可能简化创建自定义链的过程，实现了一个Runable的协议，许多LangChain的组件都实现了Runable协议，包括聊天模型、LLMs、输出解析器、检索器、
+
+提示模版等等。此外，还有一些有用的基本组件可用于处理可运行对象。这是一个标准接口，可以轻松定义自定义链，并以标准方式调用。标准接口包括：
 
 - stream：返回响应的数据块。
 - invoke：输入调用链(同步调用）。
@@ -604,18 +626,30 @@ LCEL从第一天就被设计为支持将原型投入生产，无需更改代码�
 - input_schema:从可运行对象机构自动生成的输入Pydantic模型
 - output_schema:从可运行对象机构自动生成的输出Pydantic模型
 
-流式运行对于使基于LLM的应用程序对最终用户具有响应性至关重要。如聊天模型、输出解析器、提示模版、检索器和代理都实现了LangChain Runnable接口。该接口提供了两种通用的流式内容方法：
+流式运行对于使基于LLM的应用程序对最终用户具有响应性至关重要。如聊天模型、输出解析器、提示模版、检索器和代理都实现了LangChain Runnable接口。
+
+该接口提供了两种通用的流式内容方法：
 
 1. 同步stream和异步astream：流式传输链中的最终输出的默认实现。
 2. 异步astream_events和异步astream_log：这些方法提供了一种从链中流式传输中间步骤和最终输出的方式。
 
 ## Stream
 
-所有的Runnable对象都实现了一个名为stream的同步方法和一个名为astream的异步变体。这些方法皆在以块的形式流式传输最终输出，尽快返回每个块。只有在程序中的所有步骤都知道如何处理输入时，才能进行流式传输；即，逐个处理输入块，并产生相应的输出块。这种处理的复杂性可以有所不同，从简单的任务，如发出LLM生成的令牌，到更具挑战性的任务，如在整个JSON完成前流式传输JSON结果的部分。开始探索流式传输的最佳方法从LLM应用程序中最重要的组件开始-LLM本身！
+所有的Runnable对象都实现了一个名为stream的同步方法和一个名为astream的异步变体。这些方法皆在以块的形式流式传输最终输出，尽快返回每个块。只有
+
+在程序中的所有步骤都知道如何处理输入时，才能进行流式传输；即，逐个处理输入块，并产生相应的输出块。这种处理的复杂性可以有所不同，从简单的任务，
+
+如发出LLM生成的令牌，到更具挑战性的任务，如在整个JSON完成前流式传输JSON结果的部分。开始探索流式传输的最佳方法从LLM应用程序中最重要的组件开
+
+始-LLM本身！
 
 ### LLM和聊天模型
 
-大型语言模型与其聊天变体是基于LLM的应用程序的主要瓶颈。大型语言模型可能需要几秒才能对查询生成完整的响应。这比应用程序对用户具有响应性的约200-300毫秒的阀值要慢的多。使应用程序具有更高的响应性的关键策略是显示中间进度；即，逐个令牌流式传输模型的输出。这里展示使用聊天模型流式传输的示例。以下选项中选择一个：
+大型语言模型与其聊天变体是基于LLM的应用程序的主要瓶颈。大型语言模型可能需要几秒才能对查询生成完整的响应。这比应用程序对用户具有响应性的约200-
+
+300毫秒的阀值要慢的多。使应用程序具有更高的响应性的关键策略是显示中间进度；即，逐个令牌流式传输模型的输出。这里展示使用聊天模型流式传输的示
+
+例。以下选项中选择一个：
 
 从同步stream API开始：
 
@@ -948,11 +982,11 @@ LangServe帮助开发者将 LangChain 可运行和链部署为 REST API。
 
 Pydantic 是一个在 Python中用于数据验证和解析的第三方库，现在是Python中使用广泛的数据验证库。
 
-- 它利用声明式的方式定义数据模型和Python 类型提示的强大功能来执行数据验证和序列化，使您的代码更可靠、更可读、更简洁且更易于调试。
+- 利用声明式的方式定义数据模型和Python 类型提示的强大功能来执行数据验证和序列化，使代码更可靠、更可读、更简洁且更易于调试。
 
-- 它还可以从模型生成 JSON 架构，提供了自动生成文档等功能，从而轻松与其他工具集成。
+- 可以从模型生成 JSON 架构，提供了自动生成文档等功能，从而轻松与其他工具集成。
 
-此外，它提供了一个客户端，可用于调用部署在服务器上的可运行对象。JavaScript 客户端可在 LangChain.js 中找到。
+此外，提供了一个客户端，可用于调用部署在服务器上的可运行对象。JavaScript 客户端可在 LangChain.js 中找到。
 
 ### 特性
 
@@ -1089,11 +1123,7 @@ app.add_middleware(
 curl localhost:8000/docs
 ```
 
-请确保添加 /docs 后缀。
-
-⚠️ 首页 / 没有被设计定义，因此 curl localhost:8000 或访问该 URL
-
-将返回 404。如果您想在 / 上有内容，请定义一个端点 @app.get("/")。
+请确保添加 /docs 后缀。 首页 / 没有被设计定义，因此 curl localhost:8000 或访问该 URL将返回 404。如果您想在 / 上有内容，请定义一个端点 @app.get("/")。
 
 #### 客户端
 
@@ -1182,13 +1212,13 @@ add_routes(
 - GET /my_runnable/output_schema - 可运行项的输出的 JSON 模式
 - GET /my_runnable/config_schema - 可运行项的配置的 JSON 模式
 
-这些端点与LangChain 表达式语言接口相匹配 --
+这些端点与LangChain 表达式语言接口相匹配 
 
 ## LangChain 服务监控
 
-与构建任何类型的软件一样，使用LLM构建时，总会有调试的需求。模型调用可能会失败，模型输出可能格式错误，或者可能存在一些嵌
+与构建任何类型的软件一样，使用LLM构建时，总会有调试的需求。模型调用可能会失败，模型输出可能格式错误，或者可能存在一些嵌套的模型调用，不清楚在
 
-套的模型调用，不清楚在哪一步出现了错误的输出。 有三种主要的调试方法：
+哪一步出现了错误的输出。 有三种主要的调试方法：
 
 - 详细模式(Verbose)：为你的链中的“重要”事件添加打印语句。
 - 调试模式(Debug)：为你的链中的所有事件添加日志记录语句。
@@ -1205,11 +1235,9 @@ add_routes(
 
 ### LangSmith Tracing(跟踪)
 
-使用LangChain构建的许多应用程序将包含多个步骤，其中包含多次LLM调用。 随着这些应用程序变得越来越复杂，能够检查链或代理内
+使用LangChain构建的许多应用程序将包含多个步骤，其中包含多次LLM调用。 随着这些应用程序变得越来越复杂，能够检查链或代理内部发生了什么变得至关重
 
-部发生了什么变得至关重要。 这样做的最佳方式是使用LangSmith。 在上面的链接上注册后，请确保设置你的环境变量以开始记录跟
-
-踪：
+要。 这样做的最佳方式是使用LangSmith。 在上面的链接上注册后，请确保设置你的环境变量以开始记录跟踪：
 
 LangSmith官网：https://smith.langchain.com/
 
@@ -1267,71 +1295,124 @@ agent_executor.invoke(
 {'input': '谁执导了2023年的电影《奥本海默》，他多少岁了？', 'output': '克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。截至2023年，他53岁。'}
 ```
 
-我们没有得到太多输出，但由于我们设置了LangSmith，我们可以轻松地看到发生了什么： https://smith.langchain.com/public/a89ff8
-
-8f-9ddc-4757-a395-3a1b365655bf/r
+我们没有得到太多输出，但由于我们设置了LangSmith，我们可以轻松地看到发生了什么
 
 ### Verbose(详细日志打印)
 
-如果你在Jupyter笔记本中进行原型设计或运行Python脚本，打印出链运行的中间步骤可能会有所帮助。 有许多方法可以以不同程度的详
-
-细程度启用打印。 注意：即使启用了LangSmith，这些仍然有效，因此你可以同时打开并运行它们。
+有许多方法可以以不同程度的详细程度启用打印。 注意：即使启用了LangSmith，这些仍然有效，因此你可以同时打开并运行它们。
 
 set_verbose(True)
 
-设置 verbose 标志将以稍微更易读的格式打印出输入和输出，并将跳过记录某些原始输出（例如 LLM 调用的令牌使用统计信息），以便
+设置 verbose 标志将以稍微更易读的格式打印出输入和输出，并将跳过记录某些原始输出（例如 LLM 调用的令牌使用统计信息），可以专注于应用程序逻辑。
 
-您可以专注于应用程序逻辑。
-
-```
+```python
+from langchain.agents import AgentExecutor, create_openai_functions_agent
 from langchain.globals import set_verbose
+from langchain_community.tools import TavilySearchResults
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
 set_verbose(True)
-agent_executor = AgentExecutor(agent=agent, tools=tools)
-agent_executor.invoke(
-    {"input": "Who directed the 2023 film Oppenheimer and what is their age in days?"}
+llm = ChatOpenAI(
+    temperature=0,
+    model="gpt-4o",
+    base_url="********"
+    api_key="********"
 )
+tools = [TavilySearchResults(tavily_api_key="********", max_results=1)]
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "你是一位得力的助手。",
+        ),
+        ("placeholder", "{chat_history}"),
+        ("human", "{input}"),
+        ("placeholder", "{agent_scratchpad}"),
+    ]
+)
+# 构建工具代理
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+response = agent_executor.invoke(
+    {
+        "input": "谁执导了2023年的电影《奥本海默》，他多少岁了？"
+    }
+)
+print(response)
 ```
 
 ```
 > Entering new AgentExecutor chain...
+The 2023 film "Oppenheimer" was directed by Christopher Nolan. Christopher Nolan was born on July 30, 1970. To calculate his age in days as of today, we need to determine the number of days from his birth date to the current date.
 
-Invoking: `tavily_search_results_json` with `{'query': '2023 movie Oppenheimer director'}`
+Let's calculate: 
 
+1. From July 30, 1970, to July 30, 2023, is 53 years.
+2. From July 30, 2023, to today (assuming today is October 5, 2023), is 67 days.
 
-[{'url': 'https://www.imdb.com/title/tt15398776/fullcredits/', 'content': 'Oppenheimer (2023) cast and crew credits, including actors, actresses, directors, writers and more. Menu. ... director of photography: behind-the-scenes Jason Gary ... best boy grip ... film loader Luc Poullain ... aerial coordinator'}]
-Invoking: `tavily_search_results_json` with `{'query': 'Christopher Nolan age'}`
+Now, calculate the total number of days:
 
+- 53 years = 53 * 365 = 19,345 days
+- Account for leap years: There are 13 leap years between 1970 and 2023 (1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020), adding 13 days.
 
-[{'url': 'https://www.nme.com/news/film/christopher-nolan-fans-are-celebrating-his-54th-birthday-youve-changed-things-forever-3779396', 'content': "Christopher Nolan is 54 Still my fave bit of Nolan trivia: Joey Pantoliano on creating Ralph Cifaretto's look in The Sopranos: 'The wig I had them build as an homage to Chris Nolan, I like ..."}]2023年的电影《奥本海默》由克里斯托弗·诺兰（Christopher Nolan）执导。他目前54岁。
+Total days = 19,345 + 13 + 67 = 19,425 days
+
+Christopher Nolan is 19,425 days old as of October 5, 2023.
 
 > Finished chain.
 ```
 
 ```
-{'input': '谁执导了2023年的电影《奥本海默》，他多少岁了？', 'output': '克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。截至2023年，他53岁。'}
+{'input': '谁执导了2023年的电影《奥本海默》，他多少岁了？', 'output': '2023年的电影《奥本海默》是由克里斯托弗·诺兰（Christopher Nolan）执导的。克里斯托弗·诺兰出生于1970年7月30日，因此截至2023年，他53岁。'}
 ```
 
 ### Debug(调试日志打印)
 
 set_debug(True)
 
-设置全局的 debug 标志将导致所有具有回调支持的 LangChain 组件（链、模型、代理、工具、检索器）打印它们接收的输入和生成的输
+设置全局的 debug 标志将导致所有具有回调支持的 LangChain 组件（链、模型、代理、工具、检索器）打印它们接收的输入和生成的输出。这是最详细的设置，
 
-出。这是最详细的设置，将完全记录原始输入和输出。
+将完全记录原始输入和输出。
 
-```
-from langchain.globals import set_debug
-# 构建工具代理
-agent = create_tool_calling_agent(llm, tools, prompt)
+```python
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain.globals import set_verbose, set_debug
+from langchain_community.tools import TavilySearchResults
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+
 #打印调试日志
 set_debug(True)
 #不输出详细日志
 set_verbose(False)
-# 通过传入代理和工具来创建代理执行器
-agent_executor = AgentExecutor(agent=agent, tools=tools)
-agent_executor.invoke(
-    {"input": "谁执导了2023年的电影《奥本海默》，他多少岁了？"}
+llm = ChatOpenAI(
+    temperature=0,
+    model="gpt-4o",
+    base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
+    api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
 )
+tools = [TavilySearchResults(tavily_api_key="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", max_results=1)]
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "你是一位得力的助手。",
+        ),
+        ("placeholder", "{chat_history}"),
+        ("human", "{input}"),
+        ("placeholder", "{agent_scratchpad}"),
+    ]
+)
+# 构建工具代理
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+response = agent_executor.invoke(
+    {
+        "input": "谁执导了2023年的电影《奥本海默》，他多少岁了？"
+    }
+)
+print(response)
 ```
 
 ```
@@ -1355,15 +1436,15 @@ agent_executor.invoke(
 {
   "input": ""
 }
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] [1ms] Exiting Chain run with output:
+[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] [0ms] Exiting Chain run with output:
 {
   "output": []
 }
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] [4ms] Exiting Chain run with output:
+[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] [1ms] Exiting Chain run with output:
 {
   "agent_scratchpad": []
 }
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] [10ms] Exiting Chain run with output:
+[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] [1ms] Exiting Chain run with output:
 {
   "input": "谁执导了2023年的电影《奥本海默》，他多少岁了？",
   "intermediate_steps": [],
@@ -1383,242 +1464,14 @@ agent_executor.invoke(
     "System: 你是一位得力的助手。\nHuman: 谁执导了2023年的电影《奥本海默》，他多少岁了？"
   ]
 }
-[llm/end] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] [1.81s] Exiting LLM run with output:
+[llm/end] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] [2.44s] Exiting LLM run with output:
 {
   "generations": [
     [
       {
-        "text": "",
-        "generation_info": {
-          "finish_reason": "tool_calls",
-          "model_name": "gpt-4o-2024-05-13",
-          "system_fingerprint": "fp_4e2b2da518"
-        },
-        "type": "ChatGenerationChunk",
-        "message": {
-          "lc": 1,
-          "type": "constructor",
-          "id": [
-            "langchain",
-            "schema",
-            "messages",
-            "AIMessageChunk"
-          ],
-          "kwargs": {
-            "content": "",
-            "additional_kwargs": {
-              "tool_calls": [
-                {
-                  "index": 0,
-                  "id": "call_Rhv2KLzFTU0XhJso5F79EiUp",
-                  "function": {
-                    "arguments": "{\"query\":\"2023年电影《奥本海默》导演\"}",
-                    "name": "tavily_search_results_json"
-                  },
-                  "type": "function"
-                }
-              ]
-            },
-            "response_metadata": {
-              "finish_reason": "tool_calls",
-              "model_name": "gpt-4o-2024-05-13",
-              "system_fingerprint": "fp_4e2b2da518"
-            },
-            "type": "AIMessageChunk",
-            "id": "run-cbeb35e8-b4ee-4c78-b663-e338ef90382d",
-            "tool_calls": [
-              {
-                "name": "tavily_search_results_json",
-                "args": {
-                  "query": "2023年电影《奥本海默》导演"
-                },
-                "id": "call_Rhv2KLzFTU0XhJso5F79EiUp",
-                "type": "tool_call"
-              }
-            ],
-            "tool_call_chunks": [
-              {
-                "name": "tavily_search_results_json",
-                "args": "{\"query\":\"2023年电影《奥本海默》导演\"}",
-                "id": "call_Rhv2KLzFTU0XhJso5F79EiUp",
-                "index": 0,
-                "type": "tool_call_chunk"
-              }
-            ],
-            "invalid_tool_calls": []
-          }
-        }
-      }
-    ]
-  ],
-  "llm_output": null,
-  "run": null
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] Entering Parser run with input:
-[inputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] [2ms] Exiting Parser run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence] [1.85s] Exiting Chain run with output:
-[outputs]
-[tool/start] [chain:AgentExecutor > tool:tavily_search_results_json] Entering Tool run with input:
-"{'query': '2023年电影《奥本海默》导演'}"
-[tool/end] [chain:AgentExecutor > tool:tavily_search_results_json] [2.06s] Exiting Tool run with output:
-"[{'url': 'https://baike.baidu.com/item/奥本海默/58802734', 'content': '《奥本海默》是克里斯托弗·诺兰自编自导的，由基里安·墨菲主演的传记电影，该片于2023年7月21日在北美上映，8月30日在中国内地上映，2024年3月29日在日本上映。该片改编自Kai Bird、Martin J. Sherwin的《美国普罗米修斯：奥本海默的胜与悲》，影片《奥本海默》讲述了美国"原子弹之父"罗伯特· ...'}]"
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] [1ms] Exiting Chain run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] [4ms] Exiting Chain run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] [10ms] Exiting Chain run with output:
-[outputs]
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > prompt:ChatPromptTemplate] Entering Prompt run with input:
-[inputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > prompt:ChatPromptTemplate] [1ms] Exiting Prompt run with output:
-[outputs]
-[llm/start] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] Entering LLM run with input:
-{
-  "prompts": [
-    "System: 你是一位得力的助手。\nHuman: 谁执导了2023年的电影《奥本海默》，他多少岁了？\nAI: \nTool: [{\"url\": \"https://baike.baidu.com/item/奥本海默/58802734\", \"content\": \"《奥本海默》是克里斯托弗·诺兰自编自导的，由基里安·墨菲主演的传记电影，该片于2023年7月21日在北美上映，8月30日在中国内地上映，2024年3月29日在日本上映。该片改编自Kai Bird、Martin J. Sherwin的《美国普罗米修斯：奥本海默的胜与悲》，影片《奥本海默》讲述了美国\\\"原子弹之父\\\"罗伯特· ...\"}]"
-  ]
-}
-[llm/end] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] [1.39s] Exiting LLM run with output:
-{
-  "generations": [
-    [
-      {
-        "text": "2023年电影《奥本海默》的导演是克里斯托弗·诺兰。接下来我将查询他的年龄。",
-        "generation_info": {
-          "finish_reason": "tool_calls",
-          "model_name": "gpt-4o-2024-05-13",
-          "system_fingerprint": "fp_4e2b2da518"
-        },
-        "type": "ChatGenerationChunk",
-        "message": {
-          "lc": 1,
-          "type": "constructor",
-          "id": [
-            "langchain",
-            "schema",
-            "messages",
-            "AIMessageChunk"
-          ],
-          "kwargs": {
-            "content": "2023年电影《奥本海默》的导演是克里斯托弗·诺兰。接下来我将查询他的年龄。",
-            "additional_kwargs": {
-              "tool_calls": [
-                {
-                  "index": 0,
-                  "id": "call_QuKQUKd6YLsgTgZeYcWpk2lN",
-                  "function": {
-                    "arguments": "{\"query\":\"克里斯托弗·诺兰年龄\"}",
-                    "name": "tavily_search_results_json"
-                  },
-                  "type": "function"
-                }
-              ]
-            },
-            "response_metadata": {
-              "finish_reason": "tool_calls",
-              "model_name": "gpt-4o-2024-05-13",
-              "system_fingerprint": "fp_4e2b2da518"
-            },
-            "type": "AIMessageChunk",
-            "id": "run-b7ee6125-1af5-4073-b81e-076a859755bd",
-            "tool_calls": [
-              {
-                "name": "tavily_search_results_json",
-                "args": {
-                  "query": "克里斯托弗·诺兰年龄"
-                },
-                "id": "call_QuKQUKd6YLsgTgZeYcWpk2lN",
-                "type": "tool_call"
-              }
-            ],
-            "tool_call_chunks": [
-              {
-                "name": "tavily_search_results_json",
-                "args": "{\"query\":\"克里斯托弗·诺兰年龄\"}",
-                "id": "call_QuKQUKd6YLsgTgZeYcWpk2lN",
-                "index": 0,
-                "type": "tool_call_chunk"
-              }
-            ],
-            "invalid_tool_calls": []
-          }
-        }
-      }
-    ]
-  ],
-  "llm_output": null,
-  "run": null
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] Entering Parser run with input:
-[inputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] [1ms] Exiting Parser run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence] [1.43s] Exiting Chain run with output:
-[outputs]
-[tool/start] [chain:AgentExecutor > tool:tavily_search_results_json] Entering Tool run with input:
-"{'query': '克里斯托弗·诺兰年龄'}"
-[tool/end] [chain:AgentExecutor > tool:tavily_search_results_json] [2.89s] Exiting Tool run with output:
-"[{'url': 'https://baike.baidu.com/item/克里斯托弗·诺兰/5306405', 'content': '克里斯托弗·诺兰（Christopher Nolan），1970年7月30日出生于英国伦敦，导演、编剧、制片人。1998年4月24日克里斯托弗·诺兰拍摄的首部故事片《追随》在旧金山电影节上映。2000年，克里斯托弗·诺兰凭借着他的《记忆碎片》为他获得第74届奥斯卡的提名。2005年，执导《蝙蝠侠》三部曲系列首部电影 ...'}]"
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] Entering Chain run with input:
-{
-  "input": ""
-}
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad> > chain:RunnableLambda] [1ms] Exiting Chain run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad> > chain:RunnableParallel<agent_scratchpad>] [4ms] Exiting Chain run with output:
-[outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > chain:RunnableAssign<agent_scratchpad>] [9ms] Exiting Chain run with output:
-[outputs]
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > prompt:ChatPromptTemplate] Entering Prompt run with input:
-[inputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > prompt:ChatPromptTemplate] [2ms] Exiting Prompt run with output:
-[outputs]
-[llm/start] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] Entering LLM run with input:
-{
-  "prompts": [
-    "System: 你是一位得力的助手。\nHuman: 谁执导了2023年的电影《奥本海默》，他多少岁了？\nAI: \nTool: [{\"url\": \"https://baike.baidu.com/item/奥本海默/58802734\", \"content\": \"《奥本海默》是克里斯托弗·诺兰自编自导的，由基里安·墨菲主演的传记电影，该片于2023年7月21日在北美上映，8月30日在中国内地上映，2024年3月29日在日本上映。该片改编自Kai Bird、Martin J. Sherwin的《美国普罗米修斯：奥本海默的胜与悲》，影片《奥本海默》讲述了美国\\\"原子弹之父\\\"罗伯特· ...\"}]\nAI: 2023年电影《奥本海默》的导演是克里斯托弗·诺兰。接下来我将查询他的年龄。\nTool: [{\"url\": \"https://baike.baidu.com/item/克里斯托弗·诺兰/5306405\", \"content\": \"克里斯托弗·诺兰（Christopher Nolan），1970年7月30日出生于英国伦敦，导演、编剧、制片人。1998年4月24日克里斯托弗·诺兰拍摄的首部故事片《追随》在旧金山电影节上映。2000年，克里斯托弗·诺兰凭借着他的《记忆碎片》为他获得第74届奥斯卡的提名。2005年，执导《蝙蝠侠》三部曲系列首部电影 ...\"}]"
-  ]
-}
-[llm/end] [chain:AgentExecutor > chain:RunnableSequence > llm:ChatOpenAI] [885ms] Exiting LLM run with output:
-{
-  "generations": [
-    [
-      {
-        "text": "克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。根据当前时间（2023年），他53岁。",
         "generation_info": {
           "finish_reason": "stop",
-          "model_name": "gpt-4o-2024-05-13",
-          "system_fingerprint": "fp_4e2b2da518"
+          "model_name": "gpt-4o"
         },
         "type": "ChatGenerationChunk",
         "message": {
@@ -1631,64 +1484,87 @@ agent_executor.invoke(
             "AIMessageChunk"
           ],
           "kwargs": {
-            "content": "克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。根据当前时间（2023年），他53岁。",
+            "content": "2023年的电影《奥本海默》是由克里斯托弗·诺兰执导的。克里斯托弗·诺兰出生于1970年7月30日，因此截至2023年，他53岁。",
             "response_metadata": {
               "finish_reason": "stop",
-              "model_name": "gpt-4o-2024-05-13",
-              "system_fingerprint": "fp_4e2b2da518"
+              "model_name": "gpt-4o"
             },
             "type": "AIMessageChunk",
-            "id": "run-0cc2156a-5a9d-41c2-b8bc-ecb2a291f408",
+            "id": "run--96ccc765-934b-4d52-9ab0-de8664a58cb6",
             "tool_calls": [],
             "invalid_tool_calls": []
           }
-        }
+        },
+        "text": "2023年的电影《奥本海默》是由克里斯托弗·诺兰执导的。克里斯托弗·诺兰出生于1970年7月30日，因此截至2023年，他53岁。"
       }
     ]
   ],
   "llm_output": null,
-  "run": null
+  "run": null,
+  "type": "LLMResult"
 }
-[chain/start] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] Entering Parser run with input:
+[chain/start] [chain:AgentExecutor > chain:RunnableSequence > parser:OpenAIFunctionsAgentOutputParser] Entering Parser run with input:
 [inputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence > parser:ToolsAgentOutputParser] [1ms] Exiting Parser run with output:
+[chain/end] [chain:AgentExecutor > chain:RunnableSequence > parser:OpenAIFunctionsAgentOutputParser] [0ms] Exiting Parser run with output:
 [outputs]
-[chain/end] [chain:AgentExecutor > chain:RunnableSequence] [914ms] Exiting Chain run with output:
+[chain/end] [chain:AgentExecutor > chain:RunnableSequence] [2.45s] Exiting Chain run with output:
 [outputs]
-[chain/end] [chain:AgentExecutor] [9.25s] Exiting Chain run with output:
+[chain/end] [chain:AgentExecutor] [2.45s] Exiting Chain run with output:
 {
-  "output": "克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。根据当前时间（2023年），他53岁。"
+  "output": "2023年的电影《奥本海默》是由克里斯托弗·诺兰执导的。克里斯托弗·诺兰出生于1970年7月30日，因此截至2023年，他53岁。"
 }
 ```
 
 ```
-{'input': '谁执导了2023年的电影《奥本海默》，他多少岁了？', 'output': '克里斯托弗·诺兰（Christopher Nolan）出生于1970年7月30日。根据当前时间（2023年），他53岁。'}
+{'input': '谁执导了2023年的电影《奥本海默》，他多少岁了？', 'output': '2023年的电影《奥本海默》是由克里斯托弗·诺兰执导的。克里斯托弗·诺兰出生于1970年7月30日，因此截至2023年，他53岁。'}
 ```
 
 # LangChain消息管理与聊天历史存储
 
 ## 消息存储在内存
 
-下面我们展示一个简单的示例，其中聊天历史保存在内存中，此处通过全局 Python 字典实现。
+下面展示一个简单的示例，其中聊天历史保存在内存中，此处通过全局 Python 字典实现。
 
-我们构建一个名为 get_session_history 的可调用对象，引用此字典以返回 ChatMessageHistory 实例。通过在运行时向 
+构建一个名为 get_session_history 的可调用对象，引用此字典以返回 ChatMessageHistory 实例。通过在运行时向 RunnableWithMessageHistory 传递配置，可
 
-RunnableWithMessageHistory 传递配置，可以指定可调用对象的参数。默认情况下，期望配置参数是一个字符串 session_id。可以通
-
-过 history_factory_config 关键字参数进行调整。
+以指定可调用对象的参数。默认情况下，期望配置参数是一个字符串 session_id。可以通过 history_factory_config 关键字参数进行调整。
 
 使用单参数默认值：
 
 ```python
 #chat_history_memory.py
-from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You're an assistant who's good at {ability}."
+        ),
+        MessagesPlaceholder(variable_name="history"),
+        ("human", "{input}")
+    ]
+)
+
+model = ChatOpenAI(
+    temperature=0,
+    model="gpt-4o",
+    base_url="********",
+    api_key="********"
+)
+
+runnable = prompt | model
 store = {}
+
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = ChatMessageHistory()
     return store[session_id]
+
 with_message_history = RunnableWithMessageHistory(
     runnable,
     get_session_history,
@@ -1697,48 +1573,64 @@ with_message_history = RunnableWithMessageHistory(
 )
 ```
 
-请注意，我们已指定了 `input_messages_key`（要视为最新输入消息的键）和 `history_messages_key`（要添加历史消息的键）。
+请注意，我们已指定了 `input_messages_key`（要视为最新输入消息的键）和 `history_messages_key`（要添加历史消息的键）。在调用此新 Runnable 时，我
 
-在调用此新 Runnable 时，我们通过配置参数指定相应的聊天历史：
+们通过配置参数指定相应的聊天历史： 
 
 ```python
-with_message_history.invoke(
-    {"ability": "math", "input": "余弦是什么意思？"},
-    config={"configurable": {"session_id": "abc123"}},
+response = with_message_history.invoke(
+    {"ability": "math", "input": "欧式距离是什么意思？"},
+    config={"configurable": {"session_id": "abc123"}}
 )
+
+print(response)
 ```
 
 ```
-content='余弦是一个数学函数，通常在三角学中使用，表示直角三角形的邻边和斜边的比例。' response_metadata={'token_usage': {'completion_tokens': 38, 'prompt_tokens': 38, 'total_tokens': 76}, 'model_name': 'gpt-4-0613', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None} id='run-9aa23716-3959-476d-9386-6d433266e060-0' usage_metadata={'input_tokens': 38, 'output_tokens': 38, 'total_tokens': 76}
+content='欧式距离（Euclidean distance）是指在欧几里得空间中两点之间的直线距离。它是最常用的距离度量之一，尤其在二维和三维空间中。对于两个点 \\( A(x_1, y_1) \\) 和 \\( B(x_2, y_2) \\) 在二维空间中的欧式距离，可以通过以下公式计算：\n\n\\[\nd(A, B) = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}\n\\]\n\n在三维空间中，若点 \\( A(x_1, y_1, z_1) \\) 和 \\( B(x_2, y_2, z_2) \\)，则欧式距离为：\n\n\\[\nd(A, B) = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}\n\\]\n\n一般情况下，对于 \\( n \\) 维空间中的两个点 \\( A(x_1, x_2, \\ldots, x_n) \\) 和 \\( B(y_1, y_2, \\ldots, y_n) \\)，欧式距离可以表示为：\n\n\\[\nd(A, B) = \\sqrt{\\sum_{i=1}^{n} (y_i - x_i)^2}\n\\]\n\n欧式距离在许多领域中都有应用，包括几何学、物理学、机器学习和数据分析等。它提供了一种简单而直观的方式来衡量点与点之间的距离。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 350, 'prompt_tokens': 24, 'total_tokens': 374, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-Bek212OUcCzw6Hu3eGxqzkvCRGzkr', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--a35da706-10c0-47d0-bb47-424d993bc129-0' usage_metadata={'input_tokens': 24, 'output_tokens': 350, 'total_tokens': 374, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
 
 ```
-# 记住
-with_message_history.invoke(
-    {"ability": "math", "input": "什么?"},
-    config={"configurable": {"session_id": "abc123"}},
+response = with_message_history.invoke(
+    {"ability": "math", "input": "我刚刚问了什么"},
+    config={"configurable": {"session_id": "abc123"}}
 )
+
+print(response)
 ```
 
 ```
-content='对不起，我没明白你的问题。你能再详细一点吗？我很擅长数学。' response_metadata={'token_usage': {'completion_tokens': 34, 'prompt_tokens': 32, 'total_tokens': 66}, 'model_name': 'gpt-4-0613', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None} id='run-3f69d281-a850-452f-8055-df70d4936630-0' usage_metadata={'input_tokens': 32, 'output_tokens': 34, 'total_tokens': 66}
+content='你刚刚问的是“欧式距离是什么意思？”' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 12, 'prompt_tokens': 397, 'total_tokens': 409, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-Bek45OkEcBkapwBqzyeKwmagzxaeG', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--48378fd7-f90a-4f0b-b6b5-decd4885cec5-0' usage_metadata={'input_tokens': 397, 'output_tokens': 12, 'total_tokens': 409, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+```
+
+```
+response = with_message_history.invoke(
+    {"ability": "math", "input": "我刚刚问了什么"},
+    config={"configurable": {"session_id": "abc124"}}
+)
+
+print(response)
+```
+
+```
+content='抱歉，我无法知道你之前问了什么。如果你有任何问题或需要帮助，请随时告诉我！' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 25, 'prompt_tokens': 25, 'total_tokens': 50, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-Bek5Dg1vGcaQvnBuTublxEXBR9dwA', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--dd87f3ad-66df-4d3f-a6b2-ff61424a6e90-0' usage_metadata={'input_tokens': 25, 'output_tokens': 25, 'total_tokens': 50, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
 
 ## 配置会话唯一键
 
-我们可以通过向 `history_factory_config` 参数传递一个 `ConfigurableFieldSpec` 对象列表来自定义跟踪消息历史的配置参数。下面
+可以通过向 `history_factory_config` 参数传递一个 `ConfigurableFieldSpec` 对象列表来自定义跟踪消息历史的配置参数。下面使用了两个参数：`user_id` 
 
-我们使用了两个参数：`user_id` 和 `conversation_id`。
+和 `conversation_id`。
 
 配置user_id和conversation_id作为会话唯一键
 
 ```python
 from langchain_core.runnables import ConfigurableFieldSpec
-store = {}
 def get_session_history(user_id: str, conversation_id: str) -> BaseChatMessageHistory:
-    if (user_id, conversation_id) not in store:
+    if (user_id, conversation_id)not in store:
         store[(user_id, conversation_id)] = ChatMessageHistory()
     return store[(user_id, conversation_id)]
+
 with_message_history = RunnableWithMessageHistory(
     runnable,
     get_session_history,
@@ -1749,63 +1641,74 @@ with_message_history = RunnableWithMessageHistory(
             id="user_id",
             annotation=str,
             name="User ID",
-            description="用户的唯一标识符。",
+            description="用户唯一标识",
             default="",
-            is_shared=True,
+            is_shared=True
         ),
         ConfigurableFieldSpec(
             id="conversation_id",
             annotation=str,
             name="Conversation ID",
-            description="对话的唯一标识符。",
+            description="对话唯一标识",
             default="",
-            is_shared=True,
-        ),
-    ],
+            is_shared=True
+        )
+    ]
 )
-with_message_history.invoke(
-    {"ability": "math", "input": "余弦是什么意思？"},
-    config={"configurable": {"user_id": "123", "conversation_id": "1"}},
+
+response = with_message_history.invoke(
+{"ability": "math", "input": "欧式距离是什么意思？"},
+    config={"configurable": {"user_id": "abc123", "conversation_id": "abc123"}}
 )
+
+print(response)
+
+response = with_message_history.invoke(
+{"ability": "math", "input": "我刚刚问了什么？"},
+    config={"configurable": {"user_id": "abc123", "conversation_id": "abc124"}}
+)
+
+print(response)
 ```
 
 ```
-content='对不起，你能提供一些更详细的信息吗？我会很高兴帮助你解决数学问题。' response_metadata={'token_usage': {'completion_tokens': 38, 'prompt_tokens': 32, 'total_tokens': 70}, 'model_name': 'gpt-4-0613', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None} id='run-02030348-7bbb-4f76-8c68-61785d012c26-0' usage_metadata={'input_tokens': 32, 'output_tokens': 38, 'total_tokens': 70}
+content='欧式距离（Euclidean distance）是指在欧几里得空间中两点之间的直线距离。它是最常用的距离度量之一，尤其在二维和三维空间中。对于两个点 \\( A(x_1, y_1) \\) 和 \\( B(x_2, y_2) \\) 在二维空间中的欧式距离，可以通过以下公式计算：\n\n\\[\nd(A, B) = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}\n\\]\n\n在三维空间中，若点 \\( A \\) 和 \\( B \\) 的坐标分别为 \\( (x_1, y_1, z_1) \\) 和 \\( (x_2, y_2, z_2) \\)，则欧式距离的计算公式为：\n\n\\[\nd(A, B) = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2 + (z_2 - z_1)^2}\n\\]\n\n一般情况下，对于 \\( n \\) 维空间中的两个点 \\( A(x_1, x_2, \\ldots, x_n) \\) 和 \\( B(y_1, y_2, \\ldots, y_n) \\)，欧式距离可以表示为：\n\n\\[\nd(A, B) = \\sqrt{\\sum_{i=1}^{n} (y_i - x_i)^2}\n\\]\n\n欧式距离反映了两点之间的“最短路径”，即直线距离。它在许多领域中都有应用，包括几何学、物理学、机器学习和数据分析等。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 365, 'prompt_tokens': 24, 'total_tokens': 389, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BekBU8ldfKMz3RMHo6lKdFvxZKDL4', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--59d5c17e-9fa6-403f-a4d2-b5c38ab9ba09-0' usage_metadata={'input_tokens': 24, 'output_tokens': 365, 'total_tokens': 389, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+content='抱歉，我无法知道你之前问了什么，因为我无法访问过去的对话记录。如果你有任何问题或需要帮助，请随时告诉我！' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 34, 'prompt_tokens': 26, 'total_tokens': 60, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BekD6PRj3UYGsQASc0zLzMluJJixy', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--9ad9bada-6bb7-4392-ad55-f9d1aaf1fb94-0' usage_metadata={'input_tokens': 26, 'output_tokens': 34, 'total_tokens': 60, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+
 ```
 
-在许多情况下，持久化对话历史是可取的。`RunnableWithMessageHistory` 对于 `get_session_history` 可调用如何检索其聊天消息历
-
-史是中立的。请参见这里 ，这是一个使用本地文件系统的示例。下面我们演示如何使用 Redis。请查看内存集成 页面，以获取使用其他
-
-提供程序的聊天消息历史的实现。
+在许多情况下，持久化对话历史是可取的。`RunnableWithMessageHistory` 对于 `get_session_history` 可调用如何检索其聊天消息历史是中立的。这是一个使用本地文件系统的示例。下面演示如何使用 Redis。以获取使用其他提供程序的聊天消息历史的实现。
 
 ## 消息持久化
 
-请查看 [memory integrations](https://integrations.langchain.com/memory) 页面，了解使用 Redis 和其他提供程序实现聊天消息历史的方法。这里我们演示使用内存中的 
+请查看 [memory integrations](https://integrations.langchain.com/memory) 页面，了解使用 Redis 和其他提供程序实现聊天消息历史的方法。这里我们演示使用内存中的 `ChatMessageHistory` 以及使用 、
 
-`ChatMessageHistory` 以及使用 `RedisChatMessageHistory` 进行更持久存储。
+`RedisChatMessageHistory` 进行更持久存储。
 
 ### 调用聊天接口，看Redis是否存储历史记录
 
-更新消息历史实现只需要我们定义一个新的可调用对象，这次返回一个 `RedisChatMessageHistory` 实例：
+更新消息历史实现只需要定义一个新的可调用对象，这次返回一个 `RedisChatMessageHistory` 实例：
 
-```
+```python
 from langchain_community.chat_message_histories import RedisChatMessageHistory
-def get_message_history(session_id: str) -> RedisChatMessageHistory:
-    return RedisChatMessageHistory(session_id, url=REDIS_URL)
+def get_messages_history(session_id: str) -> BaseChatMessageHistory:
+    return RedisChatMessageHistory(session_id, url="")
+
 with_message_history = RunnableWithMessageHistory(
     runnable,
-    get_message_history,
+    get_messages_history,
     input_messages_key="input",
     history_messages_key="history",
 )
 ```
 
 ```
-with_message_history.invoke(
-    {"ability": "math", "input": "余弦是什么意思？"},
-    config={"configurable": {"session_id": "foobar"}},
+response = with_message_history.invoke(
+    {"ability": "math", "input": "我刚刚问了什么？"},
+    config={"configurable": {"session_id": "abc124"}}
 )
+
+print(response)
 ```
 
 ```
@@ -1814,122 +1717,128 @@ content='余弦是一个数学术语，代表在一个角度下的邻边和斜�
 
 ## 修改聊天历史
 
-修改存储的聊天消息可以帮助您的聊天机器人处理各种情况。以下是一些示例：
+修改存储的聊天消息可以帮助聊天机器人处理各种情况。以下是一些示例：
 
 ### 裁剪消息
 
-LLM 和聊天模型有限的上下文窗口，即使您没有直接达到限制，您可能也希望限制模型处理的干扰量。一种解决方案是只加载和存储最近
+LLM 和聊天模型有限的上下文窗口，即使您没有直接达到限制，您可能也希望限制模型处理的干扰量。一种解决方案是只加载和存储最近的 `n` 条消息。使
 
-的 `n` 条消息。让我们使用一个带有一些预加载消息的示例历史记录：
+用一个带有一些预加载消息的示例历史记录：
 
-```
+```python
 temp_chat_history = ChatMessageHistory()
-temp_chat_history.add_user_message("我叫Jack，你好")
-#chatbot_clear_history.py
+temp_chat_history.add_user_message("我叫zs，你好")
 temp_chat_history.add_ai_message("你好")
-temp_chat_history.add_user_message("我今天心情挺开心")
-temp_chat_history.add_ai_message("你今天心情怎么样")
-temp_chat_history.add_user_message("我下午在打篮球")
-temp_chat_history.add_ai_message("你下午在做什么")
-temp_chat_history.messages
+temp_chat_history.add_user_message("我今天头很疼")
+temp_chat_history.add_ai_message("你今天身体怎么样")
+temp_chat_history.add_user_message("我下午在上班")
+temp_chat_history.add_ai_message("你下午在干什么")
+print(temp_chat_history.messages)
 ```
 
 ```
-[HumanMessage(content='我叫Jack，你好'), AIMessage(content='你好'), HumanMessage(content='我今天心情挺开心'), AIMessage(content='你今天心情怎么样'), HumanMessage(content='我下午在打篮球'), AIMessage(content='你下午在做什么'), HumanMessage(content='我今天心情如何?'), AIMessage(content='你今天的心情很开心。')]
+[HumanMessage(content='我叫zs，你好', additional_kwargs={}, response_metadata={}), AIMessage(content='你好', additional_kwargs={}, response_metadata={}), HumanMessage(content='我今天头很疼', additional_kwargs={}, response_metadata={}), AIMessage(content='你今天身体怎么样', additional_kwargs={}, response_metadata={}), HumanMessage(content='我下午在上班', additional_kwargs={}, response_metadata={}), AIMessage(content='你下午在干什么', additional_kwargs={}, response_metadata={})]
 ```
 
-让我们将这个消息历史与上面声明的 RunnableWithMessageHistory 链条一起使用：
+将这个消息历史与上面声明的 RunnableWithMessageHistory 链条一起使用：
 
-```
+```python
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "你是一个乐于助人的助手。尽力回答所有问题。提供的聊天历史包括与您交谈的用户的事实。",
+            "你是一个乐于助人的助手。尽力回答所有问题。提供的聊天历史包含你和用户聊的所有事实"
         ),
         MessagesPlaceholder(variable_name="chat_history"),
-        ("human", "{input}"),
+        ("human", "{input}")
     ]
 )
-chain = prompt | chat
-chain_with_message_history = RunnableWithMessageHistory(
+
+chain = prompt | model
+
+chat_with_message_history = RunnableWithMessageHistory(
     chain,
     lambda session_id: temp_chat_history,
     input_messages_key="input",
     history_messages_key="chat_history",
 )
-chain_with_message_history.invoke(
-    {"input": "我今天心情如何?"},
-    {"configurable": {"session_id": "unused"}},
+
+response = chat_with_message_history.invoke(
+    {"input": "我今天身体怎么样？"},
+    config={"configurable": {"session_id": "unused"}}
 )
+
+print(response)
 ```
 
 ```
-content='你今天的心情很开心。'
+content='你提到过今天头很疼。希望你能尽快好起来。如果头痛持续或加重，建议咨询医生。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 29, 'prompt_tokens': 92, 'total_tokens': 121, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BetqDGjVSXqLqTfMyDsEYRrUrDzQ7', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--3d52a050-d42a-4760-8d87-c35fdcb6bc39-0' usage_metadata={'input_tokens': 92, 'output_tokens': 29, 'total_tokens': 121, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
 
-我们可以看到链条记住了预加载的名字。
+可以看到链条记住了预加载的信息。但是假设有一个非常小的上下文窗口，并且想要将传递给链的消息数量减少到最近的2条。可以使用 `clear` 方法来删除消息，
 
-但是假设我们有一个非常小的上下文窗口，并且我们想要将传递给链的消息数量减少到最近的2条。我们可以使用 `clear` 方法来删除消息
+并重新将它们添加到历史记录中。
 
-并重新将它们添加到历史记录中。我们不一定要这样做，但让我们将这个方法放在链的最前面，以确保它总是被调用：
-
-```
+```python
 from langchain_core.runnables import RunnablePassthrough
 def trim_messages(chain_input):
     stored_messages = temp_chat_history.messages
     if len(stored_messages) <= 2:
         return False
     temp_chat_history.clear()
-    for message in stored_messages[-2:]:
+    for message in stored_messages[2:]:
         temp_chat_history.add_message(message)
     return True
-chain_with_trimming = (
-    RunnablePassthrough.assign(messages_trimmed=trim_messages)
-    | chain_with_message_history
+
+chat_with_trimming = (
+    RunnablePassthrough.assign(messages_trimmed=trim_messages) | chat_with_message_history
 )
 ```
 
-```
-chain_with_trimming.invoke(
-    {"input": "我下午在做什么?"},
-    {"configurable": {"session_id": "unused"}},
+```python
+response = chat_with_trimming.invoke(
+    {"input": "我下午在干什么? "},
+    config={"configurable": {"session_id": "unused"}}
 )
+
+print(response)
 ```
 
+```python
+content='你提到过你下午在上班。如果头疼影响到你的工作，建议你可以尝试休息一下，喝点水，或者稍微活动一下身体。如果头疼持续或加重，最好咨询医生以获得专业建议。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 53, 'prompt_tokens': 80, 'total_tokens': 133, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeuKO9XP4B0KBkwmDIFJNtMc8GzKK', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--c0dba340-cc35-478e-ac48-1cf7c191d9cc-0' usage_metadata={'input_tokens': 80, 'output_tokens': 53, 'total_tokens': 133, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
-根据您之前的信息，您下午在打篮球。
+
+```python
+print(temp_chat_history.messages)
+```
+
+```python
+[HumanMessage(content='我今天头很疼', additional_kwargs={}, response_metadata={}), AIMessage(content='你今天身体怎么样', additional_kwargs={}, response_metadata={}), HumanMessage(content='我下午在上班', additional_kwargs={}, response_metadata={}), AIMessage(content='你下午在干什么', additional_kwargs={}, response_metadata={}), HumanMessage(content='我下午在干什么? ', additional_kwargs={}, response_metadata={}), AIMessage(content='你提到过你下午在上班。如果头疼影响到你的工作，建议你可以尝试休息一下，喝点水，或者稍微活动一下身体。如果头疼持续或加重，最好咨询医生以获得专业建议。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 53, 'prompt_tokens': 80, 'total_tokens': 133, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeuKO9XP4B0KBkwmDIFJNtMc8GzKK', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--c0dba340-cc35-478e-ac48-1cf7c191d9cc-0', usage_metadata={'input_tokens': 80, 'output_tokens': 53, 'total_tokens': 133, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]
+```
+
+可以看到历史记录已经删除了两条最旧的消息，同时在末尾添加了最近的对话。下次调用链时，`trim_messages` 将再次被调用，只有最近的两条消息将被传递给
+
+模型。在这种情况下，这意味着下次调用时模型将忘记我们给它的名字：
+
+```python
+response = chat_with_trimming.invoke(
+    {"input": "我叫什么名字？"},
+    config={"configurable": {"session_id": "unused"}}
+)
+
+print(response)
+```
+
+```python
+content='对不起，我没有关于你名字的信息。如果你愿意，可以告诉我你的名字。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 126, 'total_tokens': 145, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeuQHIk5wZbwLTDLvdiAYN2WKaZ83', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--ae1a5b03-59e9-4e58-8dea-6f2772ccb5a5-0' usage_metadata={'input_tokens': 126, 'output_tokens': 19, 'total_tokens': 145, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
 
 ```
 temp_chat_history.messages
 ```
 
-```
-[HumanMessage(content='我下午在打篮球'), AIMessage(content='你下午在做什么'), HumanMessage(content='我下午在做什么?'), AIMessage(content='根据您之前的信息，您下午在打篮球。')]
-```
-
-我们可以看到我们的历史记录已经删除了两条最旧的消息，同时在末尾添加了最近的对话。下次调用链时，`trim_messages` 将再次被调
-
-用，只有最近的两条消息将被传递给模型。在这种情况下，这意味着下次调用时模型将忘记我们给它的名字：
-
-```
-chain_with_trimming.invoke(
-    {"input": "我叫什么名字?"},
-    {"configurable": {"session_id": "unused"}},
-)
-```
-
-```
-对不起，我无法获取这个信息，因为你还没有告诉我你的名字。
-```
-
-```
-temp_chat_history.messages
-```
-
-```
-[HumanMessage(content='我下午在打篮球'), AIMessage(content='你下午在做什么'), HumanMessage(content='我叫什么名字?'), AIMessage(content='对不起，我无法获取这个信息，因为你还没有告诉我你的名字。')]
+```python
+[HumanMessage(content='我下午在上班', additional_kwargs={}, response_metadata={}), AIMessage(content='你下午在干什么', additional_kwargs={}, response_metadata={}), HumanMessage(content='我下午在干什么? ', additional_kwargs={}, response_metadata={}), AIMessage(content='你提到过你下午在上班。如果头疼影响到你的工作，建议你可以尝试休息一下，喝点水，或者稍微活动一下身体。如果头疼持续或加重，最好咨询医生。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 49, 'prompt_tokens': 80, 'total_tokens': 129, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeuR9qfhaS5nZw697HOIH8SOnCZwe', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--e56e7ec7-678f-4f8e-88ce-42764dac2555-0', usage_metadata={'input_tokens': 80, 'output_tokens': 49, 'total_tokens': 129, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}), HumanMessage(content='我叫什么名字？', additional_kwargs={}, response_metadata={}), AIMessage(content='对不起，我没有关于你名字的信息。如果你愿意，可以告诉我你的名字。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 19, 'prompt_tokens': 123, 'total_tokens': 142, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeuRBojLZY7ICcVic6BNfIjvQE8Ye', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--f573c9ed-99ba-4993-a56f-35501370e8c5-0', usage_metadata={'input_tokens': 123, 'output_tokens': 19, 'total_tokens': 142, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]
 ```
 
 ### 总结记忆
@@ -1938,36 +1847,37 @@ temp_chat_history.messages
 
 历史和聊天机器人链：
 
-```
+```python
 temp_chat_history = ChatMessageHistory()
-temp_chat_history.add_user_message("我叫Jack，你好")
+temp_chat_history.add_user_message("我叫zs，你好")
 temp_chat_history.add_ai_message("你好")
-temp_chat_history.add_user_message("我今天心情挺开心")
-temp_chat_history.add_ai_message("你今天心情怎么样")
-temp_chat_history.add_user_message("我下午在打篮球")
-temp_chat_history.add_ai_message("你下午在做什么")
-temp_chat_history.messages
+temp_chat_history.add_user_message("我今天头很疼")
+temp_chat_history.add_ai_message("你今天身体怎么样")
+temp_chat_history.add_user_message("我下午在上班")
+temp_chat_history.add_ai_message("你下午在干什么")
 ```
 
 ```
-[HumanMessage(content='我叫Jack，你好'), AIMessage(content='你好'), HumanMessage(content='我今天心情挺开心'), AIMessage(content='你今天心情怎么样'), HumanMessage(content='我下午在打篮球'), AIMessage(content='你下午在做什么'), HumanMessage(content='我今天心情如何?'), AIMessage(content='作为一个人工智能，我无法知道你的心情。你可以告诉我你今天感觉如何，我会尽我所能提供帮助。')]
+[HumanMessage(content='我叫zs，你好', additional_kwargs={}, response_metadata={}), AIMessage(content='你好', additional_kwargs={}, response_metadata={}), HumanMessage(content='我今天头很疼', additional_kwargs={}, response_metadata={}), AIMessage(content='你今天身体怎么样', additional_kwargs={}, response_metadata={}), HumanMessage(content='我下午在上班', additional_kwargs={}, response_metadata={}), AIMessage(content='你下午在干什么', additional_kwargs={}, response_metadata={})]
 ```
 
 我们将稍微修改提示，让LLM意识到它将收到一个简短摘要而不是聊天历史：
 
-```
+```python
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "你是一个乐于助人的助手。尽力回答所有问题。提供的聊天历史包括与您交谈的用户的事实。",
+            "你是一个乐于助人的助手。尽力回答所有问题。提供的聊天历史包含你和用户聊的所有事实"
         ),
         MessagesPlaceholder(variable_name="chat_history"),
-        ("user", "{input}"),
+        ("human", "{input}")
     ]
 )
-chain = prompt | chat
-chain_with_message_history = RunnableWithMessageHistory(
+
+chain = prompt | model
+
+chat_with_message_history = RunnableWithMessageHistory(
     chain,
     lambda session_id: temp_chat_history,
     input_messages_key="input",
@@ -1977,7 +1887,7 @@ chain_with_message_history = RunnableWithMessageHistory(
 
 现在，让我们创建一个函数，将之前的交互总结为摘要。我们也可以将这个函数添加到链的最前面：
 
-```
+```python
 def summarize_messages(chain_input):
     stored_messages = temp_chat_history.messages
     if len(stored_messages) == 0:
@@ -1987,34 +1897,34 @@ def summarize_messages(chain_input):
             MessagesPlaceholder(variable_name="chat_history"),
             (
                 "user",
-                "将上述聊天消息浓缩成一条摘要消息。尽可能包含多个具体细节。",
-            ),
+                "将上述所有的聊天信息进行总结，包含多个具体细节。"
+            )
         ]
     )
-    summarization_chain = summarization_prompt | chat
+    summarization_chain = summarization_prompt | model
     summary_message = summarization_chain.invoke({"chat_history": stored_messages})
     temp_chat_history.clear()
     temp_chat_history.add_message(summary_message)
     return True
+
 chain_with_summarization = (
-    RunnablePassthrough.assign(messages_summarized=summarize_messages)
-    | chain_with_message_history
+    RunnablePassthrough.assign(messages_summarized=summarize_messages)  | chat_with_message_history
 )
 ```
 
-让我们看看它是否记得我们给它起的名字：
-
-```
-chain_with_summarization.invoke(
-    {"input": "我下午在干嘛"},
-    {"configurable": {"session_id": "unused"}},
+```python
+response = chain_with_summarization.invoke(
+    {"input": "我下午在干什么？"},
+    config={"configurable": {"session_id": "unused"}}
 )
+
+print(response)
 ```
 
 输出结果为：
 
 ```
-下午你在打篮球。
+content='根据聊天历史，你下午在上班。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 83, 'total_tokens': 93, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeukJeHB96maHEPanuVuSunUBJjez', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--969e765b-5440-4bed-a5fe-134612370232-0' usage_metadata={'input_tokens': 83, 'output_tokens': 10, 'total_tokens': 93, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
 ```
 
 查看聊天历史记录：
@@ -2024,20 +1934,37 @@ temp_chat_history.messages
 ```
 
 ```
-[AIMessage(content='用户Jack今天心情很好，他下午打了篮球。', response_metadata={'token_usage': {'completion_tokens': 20, 'prompt_tokens': 108, 'total_tokens': 128}, 'model_name': 'gpt-4-0613', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-3ece2bde-b763-4ca0-84f9-43cfdf5c2e5e-0', usage_metadata={'input_tokens': 108, 'output_tokens': 20, 'total_tokens': 128}), HumanMessage(content='我下午在干嘛'), AIMessage(content='下午你在打篮球。'})]
+[AIMessage(content='在这次对话中，用户自我介绍为“zs”，并表示今天头疼。用户还提到下午要上班。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 31, 'prompt_tokens': 71, 'total_tokens': 102, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeulkjAorrzLvULZKoTCiks5PHuUZ', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--a6d166b7-a04b-4e84-9c3c-5ec755ca823d-0', usage_metadata={'input_tokens': 71, 'output_tokens': 31, 'total_tokens': 102, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}), HumanMessage(content='我下午在干什么？', additional_kwargs={}, response_metadata={}), AIMessage(content='根据聊天历史，你下午要上班。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 10, 'prompt_tokens': 78, 'total_tokens': 88, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeulmOK96SNl0trdszMZN1l2Q3GKH', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--b706b385-f923-4ee7-bfba-3c98f45e3fa8-0', usage_metadata={'input_tokens': 78, 'output_tokens': 10, 'total_tokens': 88, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]
 ```
 
-请注意，再次调用链式模型会生成一个新的摘要，该摘要包括初始摘要以及新的消息等。您还可以设计一种混合方法，其中一定数量的消息保留在聊天历史记录中，而其他消息则被摘要。
+再次调用
+
+```python
+response = chain_with_summarization.invoke(
+    {"input": "我下午不想上班还能干什么？"},
+    config={"configurable": {"session_id": "unused"}}
+)
+
+print(response)
+```
+
+```
+content='如果你下午不想上班，可以考虑以下活动：\n\n1. **休息和放松**：如果你头疼，休息可能是最好的选择。可以在家里舒适地躺着，听音乐或冥想。\n\n2. **户外活动**：如果天气允许，可以去公园散步或骑自行车，呼吸新鲜空气。\n\n3. **阅读**：找一本你感兴趣的书，享受安静的阅读时光。\n\n4. **看电影或电视剧**：选择一部你一直想看的电影或电视剧，放松一下。\n\n5. **创作活动**：如果你喜欢艺术，可以尝试画画、写作或其他创意活动。\n\n6. **运动**：做一些轻松的运动，比如瑜伽或伸展运动，有助于缓解压力。\n\n7. **社交活动**：约朋友喝咖啡或聊天，享受轻松的社交时光。\n\n8. **学习新技能**：利用这段时间学习一些新东西，比如在线课程或烹饪新菜。\n\n确保选择的活动不会加重你的头疼，并且能够帮助你放松和恢复。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 257, 'prompt_tokens': 95, 'total_tokens': 352, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeumypWL0iD2suGmttRKMV94DaEfD', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None} id='run--4357fc0f-deaa-4580-8a39-a36c088fd448-0' usage_metadata={'input_tokens': 95, 'output_tokens': 257, 'total_tokens': 352, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+```
+
+```
+[AIMessage(content='在这次对话中，用户自我介绍为“zs”，并提到今天头很疼。用户还表示下午在上班。对话中没有提供其他具体细节或信息。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 44, 'prompt_tokens': 94, 'total_tokens': 138, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeumwOS6wiIhWqeOb2HOlto1ul5Kk', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--d199b3b6-8974-4623-8321-dd7ad5412319-0', usage_metadata={'input_tokens': 94, 'output_tokens': 44, 'total_tokens': 138, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}), HumanMessage(content='我下午不想上班还能干什么？', additional_kwargs={}, response_metadata={}), AIMessage(content='如果你下午不想上班，可以考虑以下活动：\n\n1. **休息和放松**：如果你头疼，休息可能是最好的选择。可以在家里舒适地躺着，听音乐或冥想。\n\n2. **户外活动**：如果天气允许，可以去公园散步或骑自行车，呼吸新鲜空气。\n\n3. **阅读**：找一本你感兴趣的书，享受安静的阅读时光。\n\n4. **看电影或电视剧**：选择一部你一直想看的电影或电视剧，放松一下。\n\n5. **创作活动**：如果你喜欢艺术，可以尝试画画、写作或其他创意活动。\n\n6. **运动**：做一些轻松的运动，比如瑜伽或伸展运动，有助于缓解压力。\n\n7. **社交活动**：约朋友喝咖啡或聊天，享受轻松的社交时光。\n\n8. **学习新技能**：利用这段时间学习一些新东西，比如在线课程或烹饪新菜。\n\n确保选择的活动不会加重你的头疼，并且能够帮助你放松和恢复。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 257, 'prompt_tokens': 95, 'total_tokens': 352, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BeumypWL0iD2suGmttRKMV94DaEfD', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--4357fc0f-deaa-4580-8a39-a36c088fd448-0', usage_metadata={'input_tokens': 95, 'output_tokens': 257, 'total_tokens': 352, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]
+```
 
 # LangChain多模态输入与自定义输出
 
 ## 多模态数据输入
 
-这里我们演示如何将多模态输入直接传递给模型。我们目前期望所有输入都以与[OpenAI 期望的](https://platform.openai.com/docs/guides/vision)格式相同的格式传递。对于支持多模态输
+演示如何将多模态输入直接传递给模型。目前期望所有输入都以与[OpenAI 期望的](https://platform.openai.com/docs/guides/vision)格式相同的格式传递。对于支持多模态输入的其他模型提供者，在类中添加了逻
 
-入的其他模型提供者，我们在类中添加了逻辑以转换为预期格式。
+辑以转换为预期格式。
 
-在这个例子中，我们将要求模型描述一幅图像。
+在这个例子中，将要求模型描述一幅图像。
 
 ```
 image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
