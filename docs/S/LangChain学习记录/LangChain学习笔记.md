@@ -6,7 +6,7 @@ LangChain 是一个开源的开发框架，皆在帮助开发者快速构建基�
 
 具和数据源，使开发者能够高效实现复杂的AI应用逻辑。
 
-![image-20250525182647438](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/image-20250525182647438.png)
+![image-20250525182647438](../图片/image-20250525182647438.png)
 
 LangChain框架由几个部分组成，包括：
 
@@ -26,7 +26,7 @@ LangChain库本身由几个不同的包组成：
 
 LangChain任务处理流程
 
-![image-20250525190108913](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/image-20250525190108913.png)
+![image-20250525190108913](../图片/image-20250525190108913.png)
 
 如上图，LangChain提供一套提示词模版管理工具，负责处理提示词，然后传递给大模型处理，最后处理大模型返回的结果。
 
@@ -195,7 +195,7 @@ print(result)
 
 进行维护，类似开发过程中遇到的短信模版、邮件模版等等。
 
-![image-20250525190108913](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/image-20250525190108913.png)
+![image-20250525190108913](../图片/image-20250525190108913.png)
 
 ## 什么是提示词模版？
 
@@ -1960,92 +1960,99 @@ content='如果你下午不想上班，可以考虑以下活动：\n\n1. **休�
 
 ## 多模态数据输入
 
-演示如何将多模态输入直接传递给模型。目前期望所有输入都以与[OpenAI 期望的](https://platform.openai.com/docs/guides/vision)格式相同的格式传递。对于支持多模态输入的其他模型提供者，在类中添加了逻
+演示如何将多模态输入直接传递给模型。期望所有输入都以与[OpenAI 期望的](https://platform.openai.com/docs/guides/vision)格式相同的格式传递。对于支持多模态输入的其他模型提供
 
-辑以转换为预期格式。
+者，在类中添加了逻辑以转换为预期格式。将要求模型描述一幅图像。
 
-在这个例子中，将要求模型描述一幅图像。
-
-```
-image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-```
-
-```
+```python
+import base64
+import httpx
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 
-model = ChatOpenAI(model="gpt-4o")
-```
+image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
 
-**API 参考：**[HumanMessage](https://api.python.langchain.com/en/latest/messages/langchain_core.messages.human.HumanMessage.html) | [ChatOpenAI](https://api.python.langchain.com/en/latest/chat_models/langchain_openai.chat_models.base.ChatOpenAI.html)
-
-最常支持的传入图像的方式是将其作为字节字符串传入。这应该适用于大多数模型集成。
-
-```
-import base64
-import httpx
+model = ChatOpenAI(
+    temperature=0,
+    model="gpt-4o",
+    base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
+    api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
+)
 
 image_data = base64.b64encode(httpx.get(image_url).content).decode("utf-8")
-```
 
-```
 message = HumanMessage(
     content=[
-        {"type": "text", "text": "用中文描述这张图片中的天气"},
+        {"type": "text", "text": "用中文描述这张图片"},
         {
             "type": "image_url",
             "image_url": {"url": f"data:image/jpeg;base64,{image_data}"},
+        }
+    ]
+)
+
+response = model.invoke([message])
+
+print(response.content)
+```
+
+```
+这张图片展示了一片广阔的草地，草地上绿草如茵，充满生机。图片的中央有一条木制小路，延伸向远方，仿佛引导着人们走向自然的深处。天空中蓝天白云，阳光明媚，给人一种宁静和舒适的感觉。远处可以看到一些树木和灌木丛，增添了画面的层次感和自然美。整体画面色彩鲜艳，充满了夏日的气息。
+```
+
+可以在“image_url”类型的内容块中直接提供图像 URL。请注意，只有部分模型提供商支持此功能。
+
+```python
+message = HumanMessage(
+    content=[
+        {"type": "text", "text": "用中文描述这张图片"},
+        {
+            "type": "image_url",
+            "image_url": {"url": image_url},
+        }
+    ]
+)
+
+response = model.invoke([message])
+
+print(response.content)
+```
+
+```
+这张图片展示了一片广阔的草地，草地上绿草如茵，充满生机。图片的中央有一条木制小路，延伸向远方，仿佛引导着人们走向草地深处。天空中蓝天白云，阳光明媚，给整个景色增添了宁静和自然的美感。远处可以看到一些树木和灌木丛，构成了一幅和谐美丽的自然风景画。
+```
+
+传入多幅图像
+
+```python
+message = HumanMessage(
+    content=[
+        {"type": "text", "text": "这两张图片是一样的吗"},
+        {
+            "type": "image_url",
+            "image_url": {"url": image_url},
         },
+        {
+            "type": "image_url",
+            "image_url": {"url": image_url2}
+        }
     ],
 )
-response = model.invoke([message])
-print(response.content)
+
+respone = model.invoke([message])
+
+print(respone.content)
 ```
 
 ```
-这张图片展示了一个晴朗的天气。天空中有一些淡淡的云，阳光明媚，照亮了图中的草地和木板路。天空呈现出明亮的蓝色，与绿色的草地形成了鲜明的对比。整体感觉是非常清新和舒适的，适合户外活动和散步。
-```
-
-我们可以在“image_url”类型的内容块中直接提供图像 URL。请注意，只有部分模型提供商支持此功能。
-
-```
-message = HumanMessage(
-    content=[
-        {"type": "text", "text": "用中文描述这张图片中的天气"},
-        {"type": "image_url", "image_url": {"url": image_url}},
-    ],
-)
-response = model.invoke([message])
-print(response.content)
-```
-
-```
-图片中的天气晴朗，天空中有一些稀薄的白云，整体呈现出蓝色。阳光明媚，光线充足，草地和树木显得非常绿意盎然。这种天气非常适合户外活动，比如散步或野餐。总的来说，天气非常舒适宜人。
-```
-
-我们还可以传入多幅图像
-
-```
-message = HumanMessage(
-    content=[
-        {"type": "text", "text": "这两张图片是一样的吗？"},
-        {"type": "image_url", "image_url": {"url": image_url}},
-        {"type": "image_url", "image_url": {"url": image_url}},
-    ],
-)
-response = model.invoke([message])
-print(response.content)
-```
-
-```
-这两张图片不一样。第一张是一个晴天的草地景色，有一条木板小路通向远方；第二张是一个覆盖着雪的村庄，有多栋房屋和一些红色灯笼。两张图片显示的是完全不同的场景。
+这两张图片不一样。第一张图片展示的是一个绿色的草地和木板路，天空晴朗，环境看起来像是春季或夏季。第二张图片展示的是一个被雪覆盖的村庄，周围有山和树，环境看起来像是冬季。两张图片的场景和季节都不同。
 ```
 
 ### 工具调用
 
-一些多模态模型也支持[工具调用功能。要使用此类模型调用工具，只需以](https://python.langchain.com/v0.2/docs/concepts/#functiontool-calling)[通常的方式](https://python.langchain.com/v0.2/docs/how_to/tool_calling/)将工具绑定到它们，然后使用所需类型的内容块（例
+一些多模态模型也支持工具调用功能。要使用此类模型调用工具，只需以通常的方式将工具绑定到它们，然后使用所需类型的内容块（例如，包含图像数据）调用
 
-如，包含图像数据）调用模型。
+模型。
 
 ```
 from typing import Literal
@@ -2055,101 +2062,76 @@ from langchain_core.tools import tool
 
 
 @tool
-def weather_tool(weather: Literal["晴朗的", "多云的", "多雨的","下雪的"]) -> None:
-    """Describe the weather"""
+def weather_tool(weather: Literal["晴朗的", "多云的", "多雨的", "下雪的"]) -> None:
+    """描述图片中的天气情况：晴朗、多云、多雨或下雪"""
     pass
 
-
-model = ChatOpenAI(model="gpt-4o")
 model_with_tools = model.bind_tools([weather_tool])
-image_url_1 = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
-image_url_2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Morning_in_China_Snow_Town.jpg/1280px-Morning_in_China_Snow_Town.jpg"
 
 message = HumanMessage(
     content=[
-        {"type": "text", "text": "用中文描述两张图片中的天气"},
-        {"type": "image_url", "image_url": {"url": image_url_1}},
-        {"type": "image_url", "image_url": {"url": image_url_2}},
-    ],
+        {"type": "text", "text": "用中文描述这两张图片的天气"},
+        {"type": "image_url", "image_url": {"url": image_url}},
+        {"type": "image_url", "image_url": {"url": image_url2}},
+    ]
 )
+
 response = model_with_tools.invoke([message])
+
 print(response.tool_calls)
 ```
 
-**API 参考：**[工具](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html)
-
 ```
-[{'name': 'weather_tool', 'args': {'weather': '晴朗的'}, 'id': 'call_7vbVxf7xnHvBqpO5SkVCt5xq', 'type': 'tool_call'}, {'name': 'weather_tool', 'args': {'weather': '下雪的'}, 'id': 'call_zm5zOZgSTd8R57N23aBbIfwX', 'type': 'tool_call'}]
+[{'name': 'weather_tool', 'args': {'weather': '晴朗的'}, 'id': 'call_VLsVrqY8KGt19IzdpAKjk5Ot', 'type': 'tool_call'}, {'name': 'weather_tool', 'args': {'weather': '下雪的'}, 'id': 'call_w5QxX28DZChY1JecvyxypSq1', 'type': 'tool_call'}]
 ```
 
 ## 自定义输出: JSON, XML, YAML
 
 ### 如何解析 JSON 输出
 
-虽然一些模型提供商支持内置的方法返回结构化输出，但并非所有都支持。我们可以使用输出解析器来帮助用户通过提示指定任意的 
+虽然一些模型提供商支持内置的方法返回结构化输出，但并非所有都支持。可以使用输出解析器来帮助用户通过提示指定任意的 JSON 模式，查询符合该模式
 
-JSON 模式，查询符合该模式的模型输出，最后将该模式解析为 JSON。
+的模型输出，最后将该模式解析为 JSON。请记住，大型语言模型是有泄漏的现象！必须使用具有足够容量的大型语言模型来生成格式良好的 JSON
 
-请记住，大型语言模型是有泄漏的抽象！您必须使用具有足够容量的大型语言模型来生成格式良好的 JSON。
+JsonOutputParser 是一个内置选项，用于提示并解析 JSON 输出。虽然它在功能上类似于 PydanticOutputParser，但它还支持流式返回部分 JSON 对象。
 
-JsonOutputParser 是一个内置选项，用于提示并解析 JSON 输出。虽然它在功能上类似于 [PydanticOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.pydantic.PydanticOutputParser.html)，但它还支持流式返回
+以下是如何将其与 Pydantic一起使用以方便地声明预期模式的示例：
 
-部分 JSON 对象。
-
-以下是如何将其与 [Pydantic](https://docs.pydantic.dev/) 一起使用以方便地声明预期模式的示例：
-
-```
-%pip install -qU langchain langchain-openai
-```
-
-```
-#json_output_parser.py
+```python
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_openai import ChatOpenAI
-model = ChatOpenAI(temperature=0)
-# 定义您期望的数据结构。
+# 自定义输出
+
 class Joke(BaseModel):
-    setup: str = Field(description="设置笑话的问题")
-    punchline: str = Field(description="解决笑话的答案")
-# 还有一个用于提示语言模型填充数据结构的查询意图。
-joke_query = "告诉我一个笑话。"
-# 设置解析器 + 将指令注入提示模板。
+    setup: str = Field(description="设置笑话问题")
+    punchile: str = Field(description="回答笑话问题")
+
 parser = JsonOutputParser(pydantic_object=Joke)
+
 prompt = PromptTemplate(
-    template="回答用户的查询。\n{format_instructions}\n{query}\n",
+    template="回答用户问题。\n{format_instructions}\{query}\n",
     input_variables=["query"],
-    partial_variables={"format_instructions": parser.get_format_instructions()},
+    partial_variables={"format_instructions": parser.get_format_instructions()}
 )
+
 chain = prompt | model | parser
-chain.invoke({"query": joke_query})
+
+response = chain.invoke({"query": "给我讲一个笑话"})
+
+print(response)
 ```
 
 ```
-{'setup': '为什么计算机不能得感冒？', 'punchline': '因为它们有很好的防火墙！'}
-```
-
-请注意，我们将解析器中的 `format_instructions` 直接传递到提示中。您可以并且应该尝试在提示的其他部分中添加自己的格式提示，
-
-以增强或替换默认指令：
-
-```
-parser.get_format_instructions()
-```
-
-```
-'输出应格式化为符合以下 JSON 模式的 JSON 实例。\n\n例如，对于模式 {"properties": {"foo": {"title": "Foo", "description": "字符串列表", "type": "array", "items": {"type": "string"}}}, "required": ["foo"]}，对象 {"foo": ["bar", "baz"]} 是该模式的格式良好实例。对象 {"properties": {"foo": ["bar", "baz"]}} 不是格式良好的。\n\n这是输出模式：\n```\n{"properties": {"setup": {"title": "Setup", "description": "设置笑话的问题", "type": "string"}, "punchline": {"title": "Punchline", "description": "解决笑话的答案", "type": "string"}}, "required": ["setup", "punchline"]}\n```'
+{'setup': '为什么自行车不能站立？', 'punchile': '因为它太累了！'}
 ```
 
 #### 流式处理
 
-如上所述，`JsonOutputParser` 和 `PydanticOutputParser` 之间的一个关键区别是 `JsonOutputParser` 输出解析器支持流式处理部分
+如上所述，`JsonOutputParser` 和 `PydanticOutputParser` 之间的一个关键区别是 `JsonOutputParser` 输出解析器支持流式处理部分块。以下是其示例：
 
-块。以下是其示例：
-
-```
-#json_output_parser_stream.py
+```python
 for s in chain.stream({"query": joke_query}):
     print(s)
 ```
@@ -2178,57 +2160,32 @@ for s in chain.stream({"query": joke_query}):
 {'setup': '为什么计算机不能得感冒？', 'punchline': '因为它们有很好的防火墙！'}'
 ```
 
-你也可以在没有 Pydantic 的情况下使用 `JsonOutputParser`。这将提示模型返回 JSON，但不提供关于模式应该是什么的具体信息。
-
-```
-## json_output_parser_no_pydantic.py
-joke_query = "Tell me a joke."
-parser = JsonOutputParser()
-prompt = PromptTemplate(
-    template="Answer the user query.\n{format_instructions}\n{query}\n",
-    input_variables=["query"],
-    partial_variables={"format_instructions": parser.get_format_instructions()},
-)
-chain = prompt | model | parser
-chain.invoke({"query": joke_query})
-```
-
-```
-{'joke': '为什么数学书总是很难过？因为它有太多的问题！'}
-```
-
 ## 如何解析 XML 输出
 
-下面使用[XMLOutputParser](https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.xml.XMLOutputParser.html)来提示模型生成XML输出，然后将该输出解析为可用的格式。
+下面使用XMLOutputParser来提示模型生成XML输出，然后将该输出解析为可用的格式。可以使用XMLOutputParser将默认的格式指令添加到提示中，并将输出
 
-我们可以使用XMLOutputParser将默认的格式指令添加到提示中，并将输出的XML解析为字典：
+的XML解析为字典：
 
-```
-#xml_output_parser.py
+```python
 parser = XMLOutputParser()
-# 我们将在下面的提示中添加这些指令
-parser.get_format_instructions()
+
+prompt = PromptTemplate(
+    template="回答用户问题\n{format_instructions}\n{query}\n",
+    input_variables=["query"],
+    partial_variables={"format_instructions": parser.get_format_instructions()}
+)
+
+chain = prompt | model
+
+response = chain.invoke({"query": "生成周星驰的简化电影作品列表，按照最新的时间降序"})
+
+xml_output = parser.parse(response.content)
+
+print(xml_output)
 ```
 
 ```
-The output should be formatted as a XML file.
-1. Output should conform to the tags below. 
-2. If tags are not given, make them on your own.
-3. Remember to always open and close all the tags.
-
-As an example, for the tags ["foo", "bar", "baz"]:
-1. String "<foo>
-   <bar>
-      <baz></baz>
-   </bar>
-</foo>" is a well-formatted instance of the schema. 
-2. String "<foo>
-   <bar>
-   </foo>" is a badly-formatted instance.
-3. String "<foo>
-   <tag>
-   </tag>
-</foo>" is a badly-formatted instance.
+{'movies': [{'movie': [{'title': 'The New King of Comedy'}, {'year': '2019'}]}, {'movie': [{'title': 'Journey to the West: The Demons Strike Back'}, {'year': '2017'}]}, {'movie': [{'title': 'The Mermaid'}, {'year': '2016'}]}, {'movie': [{'title': 'Journey to the West: Conquering the Demons'}, {'year': '2013'}]}, {'movie': [{'title': 'Kung Fu Hustle'}, {'year': '2004'}]}, {'movie': [{'title': 'Shaolin Soccer'}, {'year': '2001'}]}, {'movie': [{'title': 'King of Comedy'}, {'year': '1999'}]}, {'movie': [{'title': 'God of Cookery'}, {'year': '1996'}]}, {'movie': [{'title': 'A Chinese Odyssey Part Two: Cinderella'}, {'year': '1995'}]}, {'movie': [{'title': "A Chinese Odyssey Part One: Pandora's Box"}, {'year': '1995'}]}]}
 ```
 
 ```
@@ -2256,52 +2213,7 @@ xml_output = parser.parse(response.content)
 print(response.content)
 ```
 
-```
-<movies>
-  <movie>
-    <title>美人鱼</title>
-    <year>2016</year>
-  </movie>
-  <movie>
-    <title>西游降魔篇</title>
-    <year>2013</year>
-  </movie>
-  <movie>
-    <title>长江七号</title>
-    <year>2008</year>
-  </movie>
-  <movie>
-    <title>功夫</title>
-    <year>2004</year>
-  </movie>
-  <movie>
-    <title>少林足球</title>
-    <year>2001</year>
-  </movie>
-  <movie>
-    <title>喜剧之王</title>
-    <year>1999</year>
-  </movie>
-  <movie>
-    <title>大话西游之大圣娶亲</title>
-    <year>1995</year>
-  </movie>
-  <movie>
-    <title>大话西游之月光宝盒</title>
-    <year>1995</year>
-  </movie>
-  <movie>
-    <title>唐伯虎点秋香</title>
-    <year>1993</year>
-  </movie>
-  <movie>
-    <title>逃学威龙</title>
-    <year>1991</year>
-  </movie>
-</movies>
-```
-
-我们还可以添加一些标签以根据我们的需求定制输出。您可以在提示的其他部分中尝试添加自己的格式提示，以增强或替换默认指令：
+还可以添加一些标签以根据我们的需求定制输出。可以在提示的其他部分中尝试添加自己的格式提示，以增强或替换默认指令：
 
 ```
 #xml_output_parser_enhance.py
@@ -2311,104 +2223,14 @@ parser.get_format_instructions()
 ```
 
 ````
-The output should be formatted as a XML file.
-1. Output should conform to the tags below. 
-2. If tags are not given, make them on your own.
-3. Remember to always open and close all the tags.
-
-As an example, for the tags ["foo", "bar", "baz"]:
-1. String "<foo>
-   <bar>
-      <baz></baz>
-   </bar>
-</foo>" is a well-formatted instance of the schema. 
-2. String "<foo>
-   <bar>
-   </foo>" is a badly-formatted instance.
-3. String "<foo>
-   <tag>
-   </tag>
-</foo>" is a badly-formatted instance.
-
-Here are the output tags:
-```
-['movies', 'actor', 'film', 'name', 'genre']
+{'movies': [{'actor': [{'name': '周星驰'}, {'film': [{'name': '美人鱼'}, {'genre': '喜剧, 奇幻'}]}, {'film': [{'name': '西游·降魔篇'}, {'genre': '喜剧, 奇幻'}]}, {'film': [{'name': '长江7号'}, {'genre': '喜剧, 科幻'}]}, {'film': [{'name': '功夫'}, {'genre': '动作, 喜剧'}]}, {'film': [{'name': '少林足球'}, {'genre': '喜剧, 运动'}]}]}]}
 ````
-
-```
-prompt = PromptTemplate(
-    template="""{query}\n{format_instructions}""",
-    input_variables=["query"],
-    partial_variables={"format_instructions": parser.get_format_instructions()},
-)
-chain = prompt | model | parser
-output = chain.invoke({"query": actor_query})
-print(output)
-```
-
-```
-<movies>
-  <actor>
-    <name>周星驰</name>
-    <film>
-      <name>美人鱼</name>
-      <genre>喜剧, 奇幻</genre>
-    </film>
-    <film>
-      <name>西游降魔篇</name>
-      <genre>喜剧, 奇幻</genre>
-    </film>
-    <film>
-      <name>长江七号</name>
-      <genre>喜剧, 科幻</genre>
-    </film>
-    <film>
-      <name>功夫</name>
-      <genre>喜剧, 动作</genre>
-    </film>
-    <film>
-      <name>少林足球</name>
-      <genre>喜剧, 运动</genre>
-    </film>
-  </actor>
-</movies>
-```
-
-这个输出解析器还支持部分数据流的处理。以下是一个示例：
-
-```
-#xml_output_parser_stream.py
-for s in chain.stream({"query": actor_query}):
-    print(s)
-```
-
-```
-{'movies': [{'actor': [{'name': '周星驰'}]}]}
-{'movies': [{'actor': [{'film': [{'name': '美人鱼'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 奇幻'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '西游·降魔篇'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 奇幻'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '长江七号'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 科幻'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '功夫'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 动作'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '少林足球'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 运动'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '喜剧之王'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 剧情'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '大话西游之大圣娶亲'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 奇幻'}]}]}]}
-{'movies': [{'actor': [{'film': [{'name': '大话西游之月光宝盒'}]}]}]}
-{'movies': [{'actor': [{'film': [{'genre': '喜剧, 奇幻'}]}]}]}
-```
 
 ## 如何解析 YAML 输出
 
-来自不同提供商的大型语言模型（LLMs）通常根据它们训练的具体数据具有不同的优势。这也意味着有些模型在生成 JSON 以外的格式
+来自不同提供商的大型语言模型（LLMs）通常根据它们训练的具体数据具有不同的优势。这也意味着有些模型在生成 JSON 以外的格式输出方面可能更“优秀”和可
 
-输出方面可能更“优秀”和可靠。
-
-这个输出解析器允许用户指定任意模式，并查询符合该模式的 LLMS 输出，使用 YAML 格式化他们的响应。
+靠。这个输出解析器允许用户指定任意模式，并查询符合该模式的 LLMS 输出，使用 YAML 格式化他们的响应。
 
 ```
 %pip install -qU langchain langchain-openai
@@ -3258,7 +3080,7 @@ RAG是一种用额外数据增强大语言模型知识的技术。
 
 LangChain有许多组件旨在帮助构建问答应用，以及更广泛的RAG应用。
 
-![](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736307607675-cacaf074-0f77-407c-b09b-4c45972617b4.png)
+![](../图片/1736307607675-cacaf074-0f77-407c-b09b-4c45972617b4.png)
 
 ## RAG工作流
 
@@ -3276,7 +3098,7 @@ LangChain有许多组件旨在帮助构建问答应用，以及更广泛的RAG�
 2. **分割(Split)**：文本分割器[Text splitters](https://python.langchain.com/docs/concepts/#text-splitters)将大型文档(`Documents`)分成更小的块(chunks)。这对于索引数据和将其传递给模型都很有用，因为大块数据更难搜索，而且不适合模型有限的上下文窗口。
 3. **存储(Store)**：我们需要一个地方来存储和索引我们的分割(splits)，以便后续可以对其进行搜索。这通常使用向量存储[VectorStore](https://blog.frognew.com/library/agi/langchain/components/vector-stores.html)和嵌入模型[Embeddings model](https://blog.frognew.com/library/agi/langchain/components/embedding-models.html)来完成。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736306619642-e71bb3f9-95bf-4658-9f28-5568685d1304.png)
+![img](../图片/1736306619642-e71bb3f9-95bf-4658-9f28-5568685d1304.png)
 
 ### 检索和生成(Retrieval and generation)  
 
@@ -3284,7 +3106,7 @@ LangChain有许多组件旨在帮助构建问答应用，以及更广泛的RAG�
 
 5生成(Generate)： [ChatModel](https://blog.frognew.com/library/agi/langchain/components/chat-models.html)使用包含问题和检索到的数据的提示来生成答案。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736306619770-c7136d46-502f-45ff-b182-550407c5a866.png)
+![img](../图片/1736306619770-c7136d46-502f-45ff-b182-550407c5a866.png)
 
 ## 文档问答 
 
@@ -3300,7 +3122,7 @@ LangChain有许多组件旨在帮助构建问答应用，以及更广泛的RAG�
 6. 程序准备就绪，允许用户进行提问
 7. 用户提出问题，大模型调用检索器检索文档，把相关片段找出来后，组织后，回复用户。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1723195691886-f74e18ee-ffb5-4395-92dc-1fb569317281.png)
+![img](../图片/1723195691886-f74e18ee-ffb5-4395-92dc-1fb569317281.png)
 
 ### 代码实现 
 
@@ -3457,7 +3279,7 @@ if user_query:
 
 #### 效果
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736315492033-f4f64a03-fa04-4e70-9959-d7b94c08b9a1.png)
+![img](../图片/1736315492033-f4f64a03-fa04-4e70-9959-d7b94c08b9a1.png)
 
 # LangGraph快速入门与底层原理剖析
 
@@ -3477,7 +3299,7 @@ LangGraph 是 LangChain 的高级库，为大型语言模型（LLM）带来循�
 - **节点**：代表计算步骤，执行特定任务，可定制以适应不同工作流。
 - **边**：连接节点，定义计算流程，支持条件逻辑，实现复杂工作流
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736316942140-ab9413c2-b2f4-4e8d-a3c3-a0700c92784f.jpeg)
+![img](../图片/1736316942140-ab9413c2-b2f4-4e8d-a3c3-a0700c92784f.jpeg)
 
 ### 主要功能
 
@@ -3675,7 +3497,7 @@ print(result)
 
 一般的计算图如下所示
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736320177627-8176e6dc-9c06-4266-93e6-9dba2c8e24ca.png)
+![img](../图片/1736320177627-8176e6dc-9c06-4266-93e6-9dba2c8e24ca.png)
 
 这与典型的 [ReAct](https://arxiv.org/abs/2210.03629) 风格的代理进行了比较，在该代理中，您一次思考一步。 这种“计划并执行”风格代理的优势在于
 
@@ -3963,7 +3785,7 @@ app = workflow.compile()
         f.write(graph_png)
 ```
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1724582939404-0dc86760-5031-4d42-b758-76645090fc5f.png)
+![img](../图片/1724582939404-0dc86760-5031-4d42-b758-76645090fc5f.png)
 
 ```
 # 设置配置，递归限制为50
@@ -4001,7 +3823,7 @@ LangGraph 是 LangChain 的高级库，为大型语言模型（LLM）带来循�
 - 节点：代表计算步骤，执行特定任务，可定制以适应不同工作流。
 - 边：连接节点，定义计算流程，支持条件逻辑，实现复杂工作流。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736319173136-48cbaf41-afd6-4d2d-a249-2f71a79764eb.png)
+![img](../图片/1736319173136-48cbaf41-afd6-4d2d-a249-2f71a79764eb.png)
 
 LangGraph 简化了 AI 开发，自动管理状态，保持上下文，使 AI 能智能响应变化。它让开发者专注于创新，而非技术细节，同时确保应
 
@@ -4009,7 +3831,7 @@ LangGraph 简化了 AI 开发，自动管理状态，保持上下文，使 AI �
 
 ## RAG流程 
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736320029950-6383031c-dee2-494b-8b86-3f10de2e6cc4.png)
+![img](../图片/1736320029950-6383031c-dee2-494b-8b86-3f10de2e6cc4.png)
 
 一个典型的RAG应用有两个主要组成部分：
 
@@ -4025,20 +3847,20 @@ LangGraph 简化了 AI 开发，自动管理状态，保持上下文，使 AI �
 2. 分割(Split)：文本分割器[Text splitters](https://python.langchain.com/docs/concepts/#text-splitters)将大型文档(Documents)分成更小的块(chunks)。这对于索引数据和将其传递给模型都很有用，因为大块数据更难搜索，而且不适合模型有限的上下文窗口。
 3. 存储(Store)：我们需要一个地方来存储和索引我们的分割(splits)，以便后续可以对其进行搜索。这通常使用向量存储[VectorStore](https://blog.frognew.com/library/agi/langchain/components/vector-stores.html)和嵌入模型[Embeddings model](https://blog.frognew.com/library/agi/langchain/components/embedding-models.html)来完成。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736306619642-e71bb3f9-95bf-4658-9f28-5568685d1304-20250601195106405.png)
+![img](../图片/1736306619642-e71bb3f9-95bf-4658-9f28-5568685d1304-20250601195106405.png)
 
 ## 检索和生成(Retrieval and generation)  
 
 1. 检索(Retrieve)：给定用户输入，使用检索器[Retriever](https://blog.frognew.com/library/agi/langchain/components/retrievers.html)从存储中检索相关的文本片段。
 2. 生成(Generate)： [ChatModel](https://blog.frognew.com/library/agi/langchain/components/chat-models.html)使用包含问题和检索到的数据的提示来生成答案。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736306619770-c7136d46-502f-45ff-b182-550407c5a866-20250601195152608.png)
+![img](../图片/1736306619770-c7136d46-502f-45ff-b182-550407c5a866-20250601195152608.png)
 
 ## LangGraph基于RAG构建智能客服 
 
 ### 客服界面 
 
-![image.png](https://cdn.nlark.com/yuque/0/2025/png/2424104/1736322106188-57bd9147-41ba-4377-aa37-8a25105ba5a3.png?x-oss-process=image%2Fformat%2Cwebp)
+![image.p](../图片/1736322106188-57bd9147-41ba-4377-aa37-8a25105ba5a3-9194589.png)
 
 ### 运行环境 
 
@@ -4078,7 +3900,7 @@ streamlit run rag.py
 
 如何查询账户余额？
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736322106188-57bd9147-41ba-4377-aa37-8a25105ba5a3.png)
+![img](../图片/1736322106188-57bd9147-41ba-4377-aa37-8a25105ba5a3.png)
 
 # HuggingFace 核心组件及应用实战
 
@@ -4088,15 +3910,15 @@ streamlit run rag.py
 
 Hugging Face 是一个开源的 AI 社区网站，站内几乎囊括了所有常见的 AI 开源模型，号称：一网打尽，应有尽有，全部开源。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736329281540-79e3d7dd-7330-45da-bedb-b8a5988019b6.png)
+![img](../图片/1736329281540-79e3d7dd-7330-45da-bedb-b8a5988019b6.png)
 
 在 Hugging Face 中可以下载到众多开源的预训练大模型，模型本身包含相关信息和参数，可以拿来做微调和重新训练，非常方便。
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736329281532-d5807167-9ab1-4fdb-ade0-e32f9ec26c79.png)
+![img](../图片/1736329281532-d5807167-9ab1-4fdb-ade0-e32f9ec26c79.png)
 
 ## 二、Hugging Face 核心组件
 
-![img](/Users/xt03337/Documents/知识库/Learning-Alliance/docs/S/图片/1736329281595-47360d0f-4018-4626-a02e-cc7bcd73e8af.png)
+![img](../图片/1736329281595-47360d0f-4018-4626-a02e-cc7bcd73e8af.png)
 
 Hugging Face 核心组件包括 **Transformers、Dataset、Tokenizer**，此外还有一些辅助工具，如 **Accelerate**，用于加速深度学习训练
 
