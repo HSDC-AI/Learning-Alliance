@@ -6,18 +6,13 @@ from langchain_core.output_parsers import JsonOutputParser, XMLOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
-from langchain_openai import ChatOpenAI
+from docs.S.LangChain学习记录.demo.getchat import get_chat
 
 image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg"
 
 image_url2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Morning_in_China_Snow_Town.jpg/1280px-Morning_in_China_Snow_Town.jpg"
 
-model = ChatOpenAI(
-    temperature=0,
-    model="gpt-4o",
-    base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
-    api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
-)
+model = get_chat("gpt-4o")
 
 # image_data = base64.b64encode(httpx.get(image_url).content).decode("utf-8")
 #

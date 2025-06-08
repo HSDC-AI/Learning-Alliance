@@ -2,7 +2,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory, RedisChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableWithMessageHistory, RunnablePassthrough
-from langchain_openai import ChatOpenAI
+from docs.S.LangChain学习记录.demo.getchat import get_chat
 from langchain_core.runnables import ConfigurableFieldSpec
 
 # prompt = ChatPromptTemplate.from_messages(
@@ -16,12 +16,7 @@ from langchain_core.runnables import ConfigurableFieldSpec
 #     ]
 # )
 
-model = ChatOpenAI(
-    temperature=0,
-    model="gpt-4o",
-    base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
-    api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
-)
+model = get_chat("gpt-4o")
 
 #runnable = prompt | model
 #store = {}

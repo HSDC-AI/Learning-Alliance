@@ -2,15 +2,11 @@ import asyncio
 
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from sqlalchemy.util import await_only
+from docs.S.LangChain学习记录.demo.getchat import get_chat
 
-model = ChatOpenAI(
-    temperature=0,
-    model="gpt-4o",
-    base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
-    api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
-)
+model = get_chat("gpt-4o")
+
 chunks = []
 # for chunk in model.stream("海是什么颜色"):
 #     chunks.append(chunk)

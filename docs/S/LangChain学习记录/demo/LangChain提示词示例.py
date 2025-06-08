@@ -2,6 +2,7 @@ from langchain_community.vectorstores import Chroma
 from langchain.prompts.example_selector import SemanticSimilarityExampleSelector
 from langchain_core.prompts import PromptTemplate, FewShotPromptTemplate
 from langchain_openai import OpenAIEmbeddings
+from docs.S.LangChain学习记录.demo.getchat import get_key
 
 examples = [
   {
@@ -73,8 +74,8 @@ example_selector = SemanticSimilarityExampleSelector.from_examples(
     examples,
     # 生成嵌入类，用于衡量语义相似度
     OpenAIEmbeddings(
-        base_url="http://10.255.4.108:8080/v1",  # 根据你的实际API路径确认是否加 /v1
-        api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"  # 即使是假的，也要传
+        base_url=get_key("base_url"),
+        api_key=get_key("api_key")
     ),
     # 存储嵌入和执行相似性搜索的VectorStore类
     Chroma,
