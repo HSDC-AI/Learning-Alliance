@@ -25,14 +25,14 @@ URN目前为止几乎是很少见的，它与URL不同的是URL根据path找资�
 
 HTTP是一个应用协议，不负责实现，实现是通过TCP/IP来实现的
 
-![http network protocol stack](/Learning-Alliance/docs/H/HTTP/http-network-protocol-stack.png)
+![http network protocol stack](/docs/H/HTTP/http-network-protocol-stack.png)
 
 
 之前我面试别人的时候就给别人出过这样一道题目：what's happening when you access an URL on browser bar?
 
 虽然很基础，但是很考验对HTTP的理解
 
-![the process of the browser how to parse the request](/Learning-Alliance/docs/H/HTTP/process-of-parse-request.png)
+![the process of the browser how to parse the request](/docs/H/HTTP/process-of-parse-request.png)
 
 * 浏览器从URL中解析出服务器的主机名
 * 浏览器将服务器的主机名转换成服务器的IP地址
@@ -65,14 +65,14 @@ HTTP是一个应用协议，不负责实现，实现是通过TCP/IP来实现的
 
 这小部分来记录一下HTTP的状态码，1xx和2xx暂时不表，个人理解也就一个200是值得记一下的。
 
-![3xx status code](/Learning-Alliance/docs/H/HTTP/3xx.png)
+![3xx status code](/docs/H/HTTP/3xx.png)
 
 302/303/307 都是表示需要浏览器做一次跳转的，303 是HTTP 1.1中的规范，而且这三个状态码是要配合Location这个response header一起的，Location会记录具体要跳转到哪里，我试过强行把状态码返回200但是也返回Location，这里浏览器会报错，也并不会去真的跳转。
 
 ***
 
-![common headers](/Learning-Alliance/docs/H/HTTP/common-headers.png)
-![secure headers](/Learning-Alliance/docs/H/HTTP/secure-headers.png)
+![common headers](/docs/H/HTTP/common-headers.png)
+![secure headers](/docs/H/HTTP/secure-headers.png)
 
 Authenorization是我在工作中用到的一个重要header，浏览器和winwods生成一个密钥串，由Kerbors进行解析最后实现auto login的功能。
 
