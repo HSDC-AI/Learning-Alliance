@@ -2320,7 +2320,7 @@ Make sure to always enclose the YAML output in triple backticks (```). Please do
 
 ## 自定义工具
 
-在构建代理时，您需要为其提供一个`Tool`列表，以便代理可以使用这些工具。除了实际调用的函数之外，`Tool`由几个组件组成：
+在构建代理时，需要提供一个`Tool`列表，以便代理可以使用这些工具。除了实际调用的函数之外，`Tool`由几个组件组成：
 
 | 属性          | 类型               | 描述                                                         |
 | ------------- | ------------------ | ------------------------------------------------------------ |
@@ -2331,9 +2331,15 @@ Make sure to always enclose the YAML output in triple backticks (```). Please do
 
 LangChain 提供了三种创建工具的方式：
 
-1. 使用[@tool装饰器](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.tool.html#langchain_core.tools.tool) -- 定义自定义工具的最简单方式。
-2. 使用[StructuredTool.from_function](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.StructuredTool.html#langchain_core.tools.StructuredTool.from_function) 类方法 -- 这类似于`@tool`装饰器，但允许更多配置和同步和异步实现的规范。
-3. 通过子类化[BaseTool](https://api.python.langchain.com/en/latest/tools/langchain_core.tools.BaseTool.html) -- 这是最灵活的方法，它提供了最大程度的控制，但需要更多的工作量和代码。 `@tool`或`StructuredTool.from_function`类方法对于大多数用例应该足够了。 提示 如果工具具有精心选择的名称、描述和 JSON 模式，模型的性能会更好。 
+1. 使用@tool装饰器 -- 定义自定义工具的最简单方式。
+
+2. 使用StructuredTool.from_function类方法 -- 这类似于`@tool`装饰器，但允许更多配置和同步和异步实现的规范。
+
+3. 通过子类化BaseTool -- 这是最灵活的方法，它提供了最大程度的控制，但需要更多的工作量和代码。 `@tool` 
+
+   `StructuredTool.from_function`类方法对于大多数用例应该足够了。 如果工具具有精心选择的名称、描述和 JSON 模式，模型的
+
+   性能会更好。 
 
 ### @tool 装饰器
 
@@ -2341,14 +2347,14 @@ LangChain 提供了三种创建工具的方式：
 
 覆盖。此外，装饰器将使用函数的文档字符串作为工具的描述 - 因此必须提供文档字符串。
 
-```
-#示例：tools_decorator.py
+```python
 from langchain_core.tools import tool
+
 @tool
 def multiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
+    """计算两个数的积."""
     return a * b
-# 让我们检查与该工具关联的一些属性。
+
 print(multiply.name)
 print(multiply.description)
 print(multiply.args)
@@ -2356,43 +2362,52 @@ print(multiply.args)
 
 ```
 multiply
-multiply(a: int, b: int) -> int - Multiply two numbers.
+计算两个数的积.
 {'a': {'title': 'A', 'type': 'integer'}, 'b': {'title': 'B', 'type': 'integer'}}
 ```
 
 或者创建一个**异步**实现，如下所示：
 
-```
-#示例：tools_async.py
-from langchain_core.tools import tool
+```python
 @tool
-async def amultiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
+async def multiply(a: int, b: int) -> int:
+    """计算两个数的积."""
     return a * b
-```
 
-您还可以通过将它们传递给工具装饰器来自定义工具名称和 JSON 参数。
-
-```
-from pydantic import BaseModel, Field
-class CalculatorInput(BaseModel):
-    a: int = Field(description="first number")
-    b: int = Field(description="second number")
-@tool("multiplication-tool", args_schema=CalculatorInput, return_direct=True)
-def multiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
-    return a * b
-# 让我们检查与该工具关联的一些属性。
 print(multiply.name)
 print(multiply.description)
 print(multiply.args)
-print(multiply.return_direct)
+```
+
+```
+multiply
+计算两个数的积.
+{'a': {'title': 'A', 'type': 'integer'}, 'b': {'title': 'B', 'type': 'integer'}}
+```
+
+还可以通过将它们传递给工具装饰器来自定义工具名称和 JSON 参数。
+
+```python
+from pydantic import BaseModel, Field
+class CalculatorInput(BaseModel):
+    a: int = Field(description="第一个数字")
+    b: int = Field(description="第二个数字")
+
+@tool("multiplication-tool", args_schema=CalculatorInput, return_direct=True)
+def multiply(a: int, b: int) -> int:
+    """计算两个数的积."""
+    return a * b
+
+print(multiply.name)
+print(multiply.description)
+print(multiply.args)
+print(multiply.return_direct))
 ```
 
 ```
 multiplication-tool
-multiplication-tool(a: int, b: int) -> int - Multiply two numbers.
-{'a': {'title': 'A', 'description': 'first number', 'type': 'integer'}, 'b': {'title': 'B', 'description': 'second number', 'type': 'integer'}}
+计算两个数的积.
+{'a': {'description': '第一个数字', 'title': 'A', 'type': 'integer'}, 'b': {'description': '第二个数字', 'title': 'B', 'type': 'integer'}}
 True
 ```
 
@@ -2400,134 +2415,133 @@ True
 
 `StructuredTool.from_function` 类方法提供了比`@tool`装饰器更多的可配置性，而无需太多额外的代码。
 
-```
+```python
 from langchain_core.tools import StructuredTool
 import asyncio
-
 def multiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
+    """计算两个数的积."""
     return a * b
 
 async def amultiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
+    """计算两个数的积."""
     return a * b
 
 async def main():
     calculator = StructuredTool.from_function(func=multiply, coroutine=amultiply)
-    print(calculator.invoke({"a": 2, "b": 3}))
-    print(await calculator.ainvoke({"a": 2, "b": 5}))
+    print(calculator.invoke({"a": 2, "b": 2}))
+    print(await calculator.ainvoke({"a": 2, "b": 2}))
 
-# 运行异步主函数
+asyncio.run(main())
+```
+
+```
+4
+4
+```
+
+可以配置自定义参数
+
+```python
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field
+import asyncio
+
+# 自定义参数
+
+class CalculatorInput(BaseModel):
+    a: int = Field(description="第一个数字")
+    b: int = Field(description="第二个数字")
+
+def multiply(a: int, b: int) -> int:
+    """获得两个数的积"""
+    return a * b
+
+async def async_add(a: int, b: int) -> int:
+    """获得两个数的和"""
+    return a + b
+
+async def main():
+    calculator = StructuredTool.from_function(
+        func=multiply,
+        name="Calculator",
+        description="计算两个数的积",
+        args_schema=CalculatorInput,
+        return_direct=True,
+        coroutine=async_add // 指定异步方法
+    )
+    print(calculator.invoke({"a": 2, "b": 3}))
+    print(await calculator.ainvoke({"a": 2, "b": 3}))
+    print(calculator.name)
+    print(calculator.description)
+    print(calculator.args)
+
 asyncio.run(main())
 ```
 
 ```
 6
-10
+5
+Calculator
+计算两个数的积
+{'a': {'description': '第一个数字', 'title': 'A', 'type': 'integer'}, 'b': {'description': '第二个数字', 'title': 'B', 'type': 'integer'}}
 ```
 
-可以配置自定义参数
+### 错误处理工具
 
-```
-from langchain_core.tools import StructuredTool
-from pydantic import BaseModel, Field
-import asyncio
+如果正在使用带有代理的工具，可能需要一个错误处理策略，以便代理可以从错误中恢复并继续执行。 一个简单的策略是在工具内部抛
 
-class CalculatorInput(BaseModel):
-    a: int = Field(description="first number")
-    b: int = Field(description="second number")
+出 `ToolException`，并使用 `handle_tool_error` 指定一个错误处理程序。 当指定了错误处理程序时，异常将被捕获，错误处理程序将
 
-def multiply(a: int, b: int) -> int:
-    """Multiply two numbers."""
-    return a * b
+决定从工具返回输出。 可以将 `handle_tool_error` 设置为 `True`、字符串值或函数。如果是函数，该函数应该以 ToolException` 作为` 
 
-# 创建一个异步包装器函数
-async def async_addition(a: int, b: int) -> int:
-    """Multiply two numbers."""
-    return a + b
-async def main():
-    calculator = StructuredTool.from_function(
-        func=multiply,
-        name="Calculator",
-        description="multiply numbers",
-        args_schema=CalculatorInput,
-        return_direct=True,
-        #coroutine= async_addition
-        # coroutine= ... <- 如果需要，也可以指定异步方法
-    )
-    print(calculator.invoke({"a": 2, "b": 3}))
-    #print(await calculator.ainvoke({"a": 2, "b": 5}))
-    print(calculator.name)
-    print(calculator.description)
-    print(calculator.args)
+ 参数，并返回一个值。 请注意，仅仅抛出 `handle_tool_error` 是不会生效的。需要首先设置工具的 `handle_tool_error`，因为其默认
 
+值是 `False`。
 
-# 运行异步主函数
-asyncio.run(main())
-```
-
-### 处理工具错误
-
-如果您正在使用带有代理的工具，您可能需要一个错误处理策略，以便代理可以从错误中恢复并继续执行。 一个简单的策略是在工具内
-
-部抛出 `ToolException`，并使用 `handle_tool_error` 指定一个错误处理程序。 当指定了错误处理程序时，异常将被捕获，错误处理程
-
-序将决定从工具返回哪个输出。 您可以将 `handle_tool_error` 设置为 `True`、字符串值或函数。如果是函数，该函数应该以 
-
-`ToolException` 作为参数，并返回一个值。 请注意，仅仅抛出 `ToolException` 是不会生效的。您需要首先设置工具的 
-
-`handle_tool_error`，因为其默认值是 `False`。
-
-```
-from langchain_core.tools import ToolException
+```python
 def get_weather(city: str) -> int:
-    """获取给定城市的天气。"""
-    raise ToolException(f"错误：没有名为{city}的城市。")
-```
+    """获取指定城市的天气"""
+    raise ToolException(f"告警：没有获取到名为{city}城市")
 
-```
-#示例：tools_exception.py
 get_weather_tool = StructuredTool.from_function(
     func=get_weather,
     handle_tool_error=True,
 )
-get_weather_tool.invoke({"city": "foobar"})
+
+print(get_weather_tool.invoke({"city": "上海"}))
 ```
 
-```
-'错误：没有名为foobar的城市。'
+```python
+告警：没有获取到名为上海城市
 ```
 
-我们可以将`handle_tool_error`设置为一个始终返回的字符串。
+可以将`handle_tool_error`设置为一个始终返回的字符串。
 
-```
-#示例：tools_exception_handle.py
+```python
 get_weather_tool = StructuredTool.from_function(
     func=get_weather,
     handle_tool_error="没找到这个城市",
 )
-get_weather_tool.invoke({"city": "foobar"})
-```
 
-```
-"没有这样的城市，但可能在那里的温度超过0K！"
+print(get_weather_tool.invoke({"city": "北京"}))
 ```
 
 使用函数处理错误：
 
-```
-#示例：tools_exception_handle_error.py
+```python
 def _handle_error(error: ToolException) -> str:
-    return f"工具执行期间发生以下错误：`{error.args[0]}`"
+    return f"工具调用失败 `{error.args[0]}`"
+
 get_weather_tool = StructuredTool.from_function(
     func=get_weather,
     handle_tool_error=_handle_error,
 )
-get_weather_tool.invoke({"city": "foobar"})
+
+print(get_weather_tool.invoke({"city": "北京"}))
 ```
 
 ```
-'工具执行期间发生以下错误：`错误：没有名为foobar的城市。`'
+工具调用失败 `告警：没有获取到名为北京城市`
 ```
 
 ## 调用内置工具包和拓展工具
@@ -2544,93 +2558,84 @@ get_weather_tool.invoke({"city": "foobar"})
 
 4. 要调用的函数
 
-5. 工具的结果是否应直接返回给用户（仅对代理相关） 名称、描述和JSON模式作为上下文提供给LLM，允许LLM适当地确定如何使用
+5. 工具的结果是否应直接返回给用户（仅对代理相关） 名称、描述和JSON模式作为上下文提供给LLM，允许LLM适当地确定如何使用工具。 给定一组可用工具
 
-   工具。 给定一组可用工具和提示，LLM可以请求调用一个或多个工具，并提供适当的参数。 通常，在设计供聊天模型或LLM使用的
-
-   工具时，重要的是要牢记以下几点：
+   和提示，LLM可以请求调用一个或多个工具，并提供适当的参数。 通常，在设计供聊天模型或LLM使用的工具时，重要的是要牢记以下几点：
 
 - 经过微调以进行工具调用的聊天模型将比未经微调的模型更擅长进行工具调用。
 - 未经微调的模型可能根本无法使用工具，特别是如果工具复杂或需要多次调用工具。
 - 如果工具具有精心选择的名称、描述和JSON模式，则模型的性能将更好。
 - 简单的工具通常比更复杂的工具更容易让模型使用。
 
-LangChain 拥有大量第三方工具。请访问[工具集成](http://www.aidoczh.com/langchain/v0.2/docs/integrations/tools/)查看可用工具列表。
+LangChain 拥有大量第三方工具。https://python.langchain.com/v0.2/docs/integrations/tools/
 
-https://python.langchain.com/v0.2/docs/integrations/tools/
+在使用第三方工具时，请确保了解工具的工作原理、权限情况。阅读其文档，并检查是否需要从安全角度考虑任何事项。请查看安全指南获取更多信息。
 
-在使用第三方工具时，请确保您了解工具的工作原理、权限情况。请阅读其文档，并检查是否需要从安全角度考虑任何事项。请查看[安全](https://python.langchain.com/v0.1/docs/security/)
-
-指南获取更多信息。
-
-让我们尝试一下[维基百科集成](http://www.aidoczh.com/langchain/v0.2/docs/integrations/tools/wikipedia/)。
+维基百科集成
 
 ```
 pip install -qU wikipedia
 ```
 
-```
+```python
 #示例：tools_wikipedia.py
-from langchain_community.tools import WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
 api_wrapper = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=100)
 tool = WikipediaQueryRun(api_wrapper=api_wrapper)
-print(tool.invoke({"query": "langchain"}))
+print(tool.invoke({"query": "韦东奕"}))
 ```
 
 ```
-Page: LangChain
-Summary: LangChain is a framework designed to simplify the creation of applications
+Page: Wei Dongyi
+Summary: Wei Dongyi (Chinese: 韦东奕; born 1991) is a Chinese mathematician, born in J
 ```
 
 该工具具有以下默认关联项：
 
 ```
-print(f"Name: {tool.name}")
-print(f"Description: {tool.description}")
-print(f"args schema: {tool.args}")
-print(f"returns directly?: {tool.return_direct}")
+print(tool.name)
+print(tool.description)
+print(tool.args)
+print(tool.return_direct)
 ```
 
 ```
-Name: wikipedia
-Description: A wrapper around Wikipedia. Useful for when you need to answer general questions about people, places, companies, facts, historical events, or other subjects. Input should be a search query.
-args schema: {'query': {'title': 'Query', 'description': 'query to look up on wikipedia', 'type': 'string'}}
-returns directly?: False
+wikipedia
+A wrapper around Wikipedia. Useful for when you need to answer general questions about people, places, companies, facts, historical events, or other subjects. Input should be a search query.
+{'query': {'description': 'query to look up on wikipedia', 'title': 'Query', 'type': 'string'}}
+False
 ```
 
 ### 自定义默认工具
 
-我们还可以修改内置工具的名称、描述和参数的 JSON 模式。
+还可以修改内置工具的名称、描述和参数的 JSON 模式。在定义参数的 JSON 模式时，重要的是输入保持与函数相同。
 
-在定义参数的 JSON 模式时，重要的是输入保持与函数相同，因此您不应更改它。但您可以轻松为每个输入定义自定义描述。
-
-```
-#示例：tools_custom.py
+```python
 from langchain_community.tools import WikipediaQueryRun
 from langchain_community.utilities import WikipediaAPIWrapper
 from pydantic import BaseModel, Field
 class WikiInputs(BaseModel):
-    """维基百科工具的输入。"""
+    """维基百科工具输入"""
     query: str = Field(
-        description="query to look up in Wikipedia, should be 3 or less words"
+        description="至少输入三个字符，才可以进行查询"
     )
+
 tool = WikipediaQueryRun(
     name="wiki-tool",
-    description="look up things in wikipedia",
+    description="查询维基百科",
     args_schema=WikiInputs,
     api_wrapper=api_wrapper,
-    return_direct=True,
+    return_direct=True
 )
-print(tool.run("langchain"))
+
+print(tool.run("韦东奕"))
 ```
 
 ```
-Page: LangChain
-Summary: LangChain is a framework designed to simplify the creation of applications 
+Page: Wei Dongyi
+Summary: Wei Dongyi (Chinese: 韦东奕; born 1991) is a Chinese mathematician, born in J
 ```
 
-```
+```python
 print(f"Name: {tool.name}")
 print(f"Description: {tool.description}")
 print(f"args schema: {tool.args}")
@@ -2639,20 +2644,16 @@ print(f"returns directly?: {tool.return_direct}")
 
 ```
 Name: wiki-tool
-Description: look up things in wikipedia
-args schema: {'query': {'title': 'Query', 'description': 'query to look up in Wikipedia, should be 3 or less words', 'type': 'string'}}
+Description: 查询维基百科
+args schema: {'query': {'description': '至少输入三个字符，才可以进行查询', 'title': 'Query', 'type': 'string'}}
 returns directly?: True
 ```
 
 ### 如何使用内置工具包
 
-工具包是一组旨在一起使用以执行特定任务的工具。它们具有便捷的加载方法。
+工具包是一组旨在一起使用以执行特定任务的工具。它们具有便捷的加载方法。要获取可用的现成工具包完整列表，请访问[集成](http://www.aidoczh.com/langchain/v0.2/docs/integrations/toolkits/)。所有工具包都公开了一个 
 
-要获取可用的现成工具包完整列表，请访问[集成](http://www.aidoczh.com/langchain/v0.2/docs/integrations/toolkits/)。
-
-所有工具包都公开了一个 get_tools 方法，该方法返回一个工具列表。
-
-通常您应该这样使用它们：
+get_tools 方法，该方法返回一个工具列表。
 
 ```
 # 初始化一个工具包
@@ -2729,17 +2730,15 @@ Here are some sample rows from the `full_llm_cache` table:
 
 ## 创建和运行 Agent
 
-单独来说，语言模型无法采取行动 - 它们只能输出文本。
+单独来说，语言模型无法采取行动 - 它们只能输出文本。LangChain 的一个重要用例是创建**代理**。代理是使用 LLM 作为推理引擎的系
 
-LangChain 的一个重要用例是创建**代理**。
+统，用于确定应采取哪些行动以及这些行动的输入应该是什么。然后可以将这些行动的结果反馈给代理，并确定是否需要更多行动，或者
 
-代理是使用 LLM 作为推理引擎的系统，用于确定应采取哪些行动以及这些行动的输入应该是什么。
+是否可以结束。构建一个可以与多种不同工具进行交互的代理：一个是本地数据库，另一个是搜索引擎。能够向该代理提问，观察它调用
 
-然后可以将这些行动的结果反馈给代理，并确定是否需要更多行动，或者是否可以结束。
+工具，并与它进行对话。下面将介绍使用 LangChain 代理进行构建。LangChain 代理适合入门，但在一定程度之后，希望拥有它们无法
 
-在本次课程中，我们将构建一个可以与多种不同工具进行交互的代理：一个是本地数据库，另一个是搜索引擎。您将能够向该代理提问，观察它调用工具，并与它进行对话。
-
-下面将介绍使用 LangChain 代理进行构建。LangChain 代理适合入门，但在一定程度之后，我们可能希望拥有它们无法提供的灵活性和控制性。要使用更高级的代理，我们建议查看LangGraph
+提供的灵活性和控制性。要使用更高级的代理，我们建议查看LangGraph
 
 ### 概念
 
@@ -2761,13 +2760,9 @@ pip install langchain
 
 #### LangSmith
 
-使用 LangChain 构建的许多应用程序将包含多个步骤，其中会多次调用 LLM。
+使用 LangChain 构建的许多应用程序将包含多个步骤，其中会多次调用 LLM。随着这些应用程序变得越来越复杂，能够检查链或代理内
 
-随着这些应用程序变得越来越复杂，能够检查链或代理内部发生了什么变得至关重要。
-
-这样做的最佳方式是使用[LangSmith](https://smith.langchain.com/)。
-
-在上面的链接注册后，请确保设置您的环境变量以开始记录跟踪：
+部发生了什么变得至关重要。这样做的最佳方式是使用[LangSmith](https://smith.langchain.com/)。在上面的链接注册后，请确保设置您的环境变量以开始记录跟踪：
 
 ```
 export LANGCHAIN_TRACING_V2="true"
@@ -2776,30 +2771,20 @@ export LANGCHAIN_API_KEY="..."
 
 ### 定义工具
 
-我们首先需要创建我们想要使用的工具。我们将使用两个工具：[Tavily](http://www.aidoczh.com/langchain/v0.2/docs/integrations/tools/tavily_search/)（用于在线搜索），然后是我们将创建的本地索引上的检索器。
+首先需要创建我们想要使用的工具。我们将使用两个工具：[Tavily](http://www.aidoczh.com/langchain/v0.2/docs/integrations/tools/tavily_search/)（用于在线搜索），然后是我们将创建的本地索引上的检索器。
 
 #### Tavily
 
-LangChain 中有一个内置工具，可以轻松使用 Tavily 搜索引擎作为工具。
+LangChain 中有一个内置工具，可以轻松使用 Tavily 搜索引擎作为工具。这需要一个 API 密钥 - 他们有一个免费的层级，
 
-请注意，这需要一个 API 密钥 - 他们有一个免费的层级，但如果您没有或不想创建一个，您可以忽略这一步。
+```python
+from langchain_community.tools import TavilySearchResults
 
-创建 API 密钥后，您需要将其导出为：
+from docs.S.LangChain学习记录.demo.getchat import get_key
 
-```
-export TAVILY_API_KEY="..."
-```
+search = TavilySearchResults(tavily_api_key=get_key("tavily_api_key") ,max_results=2)
 
-```
-from langchain_community.tools.tavily_search import TavilySearchResults
-```
-
-```
-search = TavilySearchResults(max_results=2)
-```
-
-```
-print(search.invoke("今天上海天气怎么样"))
+print(search.invoke("上海的天气怎么样"))
 ```
 
 ```
@@ -2810,69 +2795,40 @@ print(search.invoke("今天上海天气怎么样"))
 
 Retriever 是 langchain 库中的一个模块，用于检索工具。检索工具的主要用途是从大型文本集合或知识库中找到相关信息。它们通常用
 
-于问答系统、对话代理和其他需要从大量文本数据中提取信息的应用程序。
+于问答系统、对话代理和其他需要从大量文本数据中提取信息的应用程序。可以在自己的一些数据上创建一个Retriever。有关每个步骤的
 
-我们还将在自己的一些数据上创建一个Retriever。有关每个步骤的更深入解释，请参阅此教程。
+更深入解释，请参阅此教程。
 
-```
-#示例：tools_retriever.py
+```python
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-loader = WebBaseLoader("https://zh.wikipedia.org/wiki/%E7%8C%AB")
+loader = WebBaseLoader("https://www.thepaper.cn/newsdetail_forward_28688049")
+
 docs = loader.load()
+
 documents = RecursiveCharacterTextSplitter(
-    #chunk_size 参数在 RecursiveCharacterTextSplitter 中用于指定每个文档块的最大字符数。它的作用主要有以下几个方面：
-    #chunk_overlap 参数用于指定每个文档块之间的重叠字符数。这意味着，当文档被拆分成较小的块时，每个块的末尾部分会与下一个块的开头部分有一定数量的重叠字符。
-    #第一个块包含字符 1 到 1000。第二个块包含字符 801 到 1800。第三个块包含字符 1601 到 2600。
-    chunk_size=1000, chunk_overlap=200
+    chunk_size=200, chunk_overlap=20
 ).split_documents(docs)
-vector = FAISS.from_documents(documents, OpenAIEmbeddings())
+
+vector = FAISS.from_documents(documents, OpenAIEmbeddings(
+        base_url=get_key("base_url"),
+        api_key=get_key("api_key")
+))
+
 retriever = vector.as_retriever()
+
+print(retriever.invoke("iphone16的价格")[0])
 ```
 
 ```
-retriever.invoke("猫的特征")[0]
-```
-
-```
-page_content='聽覺[编辑]
-貓每隻耳各有32條獨立的肌肉控制耳殼轉動，因此雙耳可單獨朝向不同的音源轉動，使其向獵物移動時仍能對周遭其他音源保持直接接觸。[50] 除了蘇格蘭折耳貓這類基因突變的貓以外，貓極少有狗常見的「垂耳」，多數的貓耳向上直立。當貓忿怒或受驚時，耳朵會貼向後方，並發出咆哮與「嘶」聲。
-貓與人類對低頻聲音靈敏度相若。人類中只有極少數的調音師能聽到20 kHz以上的高頻聲音（8.4度的八度音），貓則可達64kHz（10度的八度音），比人類要高1.6個八度音，甚至比狗要高1個八度；但是貓辨別音差須開最少5度，比起人類辨別音差須開最少0.5度來得粗疏。[51][47]
-
-嗅覺[编辑]
-家貓的嗅覺較人類靈敏14倍。[52]貓的鼻腔內有2億個嗅覺受器，數量甚至超過某些品種的狗（狗嗅覺細胞約1.25億～2.2億）。
-
-味覺[编辑]
-貓早期演化時由於基因突變，失去了甜的味覺，[53]但貓不光能感知酸、苦、鹹味，选择适合自己口味的食物，还能尝出水的味道，这一点是其他动物所不及的。不过总括来说猫的味觉不算完善，相比一般人類平均有9000個味蕾，貓一般平均僅有473個味蕾且不喜好低於室溫之食物。故此，貓辨認食物乃憑嗅覺多於味覺。[47]
-
-觸覺[编辑]
-貓在磨蹭時身上會散發出特別的費洛蒙，當這些獨有的費洛蒙留下時，目的就是在宣誓主權，提醒其它貓這是我的，其實這種行為算是一種標記地盤的象徵，會讓牠們有感到安心及安全感。
-
-被毛[编辑]
-主条目：貓的毛色遺傳和顏色
-長度[编辑]
-貓主要可以依據被毛長度分為長毛貓，短毛貓和無毛貓。' metadata={'source': 'https://zh.wikipedia.org/wiki/%E7%8C%AB', 'title': '猫 - 维基百科，自由的百科全书', 'language': 'zh'}
-```
-
-现在，我们已经填充了我们将要进行Retriever的索引，我们可以轻松地将其转换为一个工具（代理程序正确使用所需的格式）。
-
-```
-from langchain.tools.retriever import create_retriever_tool
-```
-
-```
-retriever_tool = create_retriever_tool(
-    retriever,
-    "wiki_search",
-    "搜索维基百科",
-)
+page_content='16五种颜色，5999元起售中国官网显示，iPhone 16和iPhone 16 Plus起售价分别为5999元和6999元。iPhone 16和iPhone 16 Plus共有五种颜色可选，分别为黑色、白色、粉色、深青色和群青色。摄像头排列方式从此前的对角式分布变为垂直排列。iPhone16系列屏幕方面，苹果介绍，iPhone 16使用了苹果最硬的强度玻璃，可保护显示屏免受刮伤。iPhone' metadata={'source': 'https://www.thepaper.cn/newsdetail_forward_28688049', 'title': 'iPhone 16发布：售价5999元起，新增沙漠金配色，AI功能来了_10%公司_澎湃新闻-The Paper', 'description': '北京时间9月10日凌晨，苹果公司召开秋季特别活动，正式发布iPhone 16系列手机和Apple Watch Series 10系列手表，以及AirPods 4', 'language': 'No language found.'}
 ```
 
 #### 工具
 
-既然我们都创建好了，我们可以创建一个工具列表，以便在下游使用。
+既然都创建好了，可以创建一个工具列表，以便在下游使用。
 
 ```python
 tools = [search, retriever_tool]
@@ -2880,23 +2836,22 @@ tools = [search, retriever_tool]
 
 ## 使用语言模型
 
-接下来，让我们学习如何使用语言模型来调用工具。LangChain支持许多可以互换使用的不同语言模型 - 选择您想要使用的语言模型！
+接下来，如何使用语言模型来调用工具。LangChain支持许多可以互换使用的不同语言模型 - 选择想要使用的语言模型！
 
 ```python
-from langchain_openai import ChatOpenAI
-model = ChatOpenAI(model="gpt-4")
+model = get_chat('gpt-4o')
+
+response = model.invoke([HumanMessage(content="你好")])
+print(response.content)
 ```
 
-您可以通过传入消息列表来调用语言模型。默认情况下，响应是一个`content`字符串。
+可以通过传入消息列表来调用语言模型。默认情况下，响应是一个`content`字符串。
 
 ```python
-from langchain_core.messages import HumanMessage
-response = model.invoke([HumanMessage(content="hi!")])
-response.content
-'Hello! How can I assist you today?'
+content='你好！有什么可以帮您的吗？😊' 
 ```
 
-现在，我们可以看看如何使这个模型能够调用工具。为了使其具备这种能力，我们使用`.bind_tools`来让语言模型了解这些工具。
+可以看看如何使这个模型能够调用工具。为了使其具备这种能力，使用`.bind_tools`来让语言模型了解这些工具。
 
 ```python
 model_with_tools = model.bind_tools(tools)
@@ -2905,36 +2860,44 @@ model_with_tools = model.bind_tools(tools)
 现在我们可以调用模型了。让我们首先用一个普通的消息来调用它，看看它的响应。我们可以查看`content`字段和`tool_calls`字段。
 
 ```python
-response = model_with_tools.invoke([HumanMessage(content="你好")])
-print(f"ContentString: {response.content}")
-print(f"ToolCalls: {response.tool_calls}")
-ContentString: 你好！有什么可以帮助你的吗？
-ToolCalls: []
+tools = [search, retriever_tool]
+
+model = get_chat('gpt-4o')
+#
+# response = model.invoke([HumanMessage(content="你好")])
+# print(response)
+
+model_with_tools = model.bind_tools(tools)
+
+response = model_with_tools.invoke([HumanMessage(content="你是谁")])
+
+print(response.content)
+print(response.tool_calls)
 ```
 
-现在，让我们尝试使用一些期望调用工具的输入来调用它。
+```
+我是一个由人工智能驱动的助手，可以回答你的问题、提供信息和帮助解决问题。你可以问我任何事情！有什么我可以帮你的吗？
+[]
+```
+
+尝试使用一些期望调用工具的输入来调用它。
 
 ```python
-response = model_with_tools.invoke([HumanMessage(content="今天上海天气怎么样")])
-print(f"ContentString: {response.content}")
-print(f"ToolCalls: {response.tool_calls}")
-ContentString: 
-ToolCalls: [{'name': 'tavily_search_results_json', 'args': {'query': '今天上海天气'}, 'id': 'call_EOxYscVIVjttlbztWoR1CvTm', 'type': 'tool_call'}]
+response = model_with_tools.invoke([HumanMessage(content="今天京东的股价")])
+
+print(response.content)
+print(response.tool_calls)
 ```
 
-我们可以看到现在没有内容，但有一个工具调用！它要求我们调用Tavily Search工具。
+可以看到现在没有内容，但有一个工具调用！要求我们调用Tavily Search工具。这并不是在调用该工具 - 它只是告诉我们要调用。为了实
 
-这并不是在调用该工具 - 它只是告诉我们要调用。为了实际调用它，我们将创建我们的代理程序。
+际调用它，我们将创建我们的代理程序。
 
 ## 创建代理程序
 
-既然我们已经定义了工具和LLM，我们可以创建代理程序。我们将使用一个工具调用代理程序 - 有关此类代理程序以及其他选项的更多信息，请参阅[此指南](http://www.aidoczh.com/langchain/v0.2/docs/concepts/#agent_types/)。
+既然我们已经定义了工具和LLM，可以创建代理程序。将使用一个工具调用代理程序 - 有关此类代理程序以及其他选项的更多信
 
-我们可以首先选择要用来指导代理程序的提示。
-
-如果您想查看此提示的内容并访问LangSmith，您可以转到：
-
-https://smith.langchain.com/hub/hwchase17/openai-functions-agent
+息，请参阅[此指南](http://www.aidoczh.com/langchain/v0.2/docs/concepts/#agent_types/)。可以首先选择要用来指导代理程序的提示。如果想查看此提示的内容并访问LangSmith。
 
 ```python
 #示例：agent_tools_create.py
@@ -2942,101 +2905,137 @@ from langchain import hub
 # 获取要使用的提示 - 您可以修改这个！
 prompt = hub.pull("hwchase17/openai-functions-agent")
 prompt.messages
-[SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=[], template='You are a helpful assistant')), MessagesPlaceholder(variable_name='chat_history', optional=True), HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['input'], template='{input}')), MessagesPlaceholder(variable_name='agent_scratchpad')]
 ```
 
-现在，我们可以使用LLM、提示和工具初始化代理。代理负责接收输入并决定采取什么行动。关键的是，代理不执行这些操作 - 这是由AgentExecutor（下一步）完成的。
-
-请注意，我们传递的是`model`，而不是`model_with_tools`。这是因为`create_tool_calling_agent`会在幕后调用`.bind_tools`。
-
-```python
-from langchain.agents import create_tool_calling_agent
-agent = create_tool_calling_agent(model, tools, prompt)
 ```
-
-最后，我们将代理（大脑）与AgentExecutor中的工具结合起来（AgentExecutor将重复调用代理并执行工具）。
-
-```python
-from langchain.agents import AgentExecutor
-agent_executor = AgentExecutor(agent=agent, tools=tools)
+[SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=[], input_types={}, partial_variables={}, template='You are a helpful assistant'), additional_kwargs={}), MessagesPlaceholder(variable_name='chat_history', optional=True), HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['input'], input_types={}, partial_variables={}, template='{input}'), additional_kwargs={}), MessagesPlaceholder(variable_name='agent_scratchpad')]
 ```
 
 ## 运行代理
 
-现在，我们可以在几个查询上运行代理！请注意，目前这些都是**无状态**查询（它不会记住先前的交互）。
+现在，可以在几个查询上运行代理！请注意，目前这些都是**无状态**查询（它不会记住先前的交互）。首先，让我们看看当不需要调用
 
-首先，让我们看看当不需要调用工具时它如何回应：
+工具时它如何回应：
 
 ```python
-#示例：agent_tools_run.py
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+prompt = hub.pull("hwchase17/openai-functions-agent")
+
+agent = create_openai_functions_agent(model, tools, prompt)
+
+agent_executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    verbose=True,
+)
+
 print(agent_executor.invoke({"input": "你好"}))
+```
+
+```python
 {'input': '你好', 'output': '你好！有什么我可以帮助你的吗？'}
 ```
 
-为了确切了解底层发生了什么（并确保它没有调用工具），我们可以查看[LangSmith跟踪](https://smith.langchain.com/public/8441812b-94ce-4832-93ec-e1114214553a/r)
-
-现在让我们尝试一个应该调用检索器的示例：
+现在让尝试一个应该调用检索器的示例：
 
 ```python
-print(agent_executor.invoke({"input": "猫的特征"}))
-{'input': '猫的特征', 'output': '猫有许多显著的特征，包括以下几点：\n\n**听觉**：猫每只耳朵都有32条独立的肌肉控制耳壳转动。它们可以单独朝向不同的音源转动，使得在向猎物移动时仍能对周围其他音源保持直接接触。猫的听觉比人类和狗更敏锐，能听到更高的频率。\n\n**嗅觉**：家猫的嗅觉比人类灵敏14倍，鼻腔内有2亿个嗅觉受器，数量甚至超过某些品种的狗。\n\n**味觉**：由于早期的演化，猫失去了甜的味觉，但它们能感知酸、苦、咸味，并选择适合自己口味的食物。不过总的来说，猫的味觉并不算完善，相比一般人类平均有9000个味蕾，猫一般平均只有473个味蕾，且不喜欢低于室温的食物。\n\n**触觉**：猫在磨蹭时身上会散发出特别的费洛蒙，当这些独有的费洛蒙留下时，目的就是在宣誓主权，提醒其他猫这是我的。\n\n**被毛**：猫的被毛长度可以根据成为长毛猫，短毛猫和无毛猫。\n\n**视觉**：猫的夜视能力和追踪视觉活动物体相当出色，夜视能力是人类的六倍。猫的眼睛具有微光观察能力，即使只有微弱的月光也能分辨物体。\n\n**骨骼**：猫的骨骼共有230块，其中脊椎骨占了30块。\n\n**爪子**：猫的爪子尖锐且具有伸缩作用，能向外张开或向内收缩藏起来。\n\n**地域性攻击**：猫是很有地域性的动物，会在自己的地盤留下气味，利用下巴、耳朵及尾部的皮脂腺磨蹭物体以标记领地。\n\n**与狗的关系**：一般认为猫和狗互相厌恶，但经过训练和适应，猫和狗可能理解同一种“语言”并和睦相处。\n\n以上是猫的一些主要特征，但每只猫都有其个性和独特之处。'}
+print(agent_executor.invoke({"input": "上海天气"}))
+{'input': '上海天气', 'output': '当前上海的天气情况如下：\n\n- 温度范围：19°C 至 27°C\n- 天气状况：晴\n\n如果您需要更详细的天气预报，可以访问[天气网上海天气预报](https://www.tianqi.com/shanghai/)查看未来几天的详细天气情况。'}
 ```
 
-让我们查看[LangSmith跟踪](https://smith.langchain.com/public/762153f6-14d4-4c98-8659-82650f860c62/r)以确保它实际上在调用该工具。
+详细调用信息
 
-现在让我们尝试一个需要调用搜索工具的示例：
+```
+> Entering new AgentExecutor chain...
+
+Invoking: `tavily_search` with `{'query': '上海天气'}`
+
+{'query': '上海天气', 'follow_up_questions': None, 'answer': None, 'images': [], 'results': [{'title': '【上海天气预报】上海天气预报一周,上海天气预报15天,30天,今天,明天,7天,10天,未来上海一周天气预报查询—天气网', 'url': 'https://www.tianqi.com/shanghai/', 'content': '20℃ 晴19 ~ 27℃ 晴19 ~ 27℃ 晴18 ~ 26℃ 晴19 ~ 28℃ 晴18 ~ 27℃ 晴18 ~ 27℃ 晴19 ~ 27℃ 晴18 ~ 26℃ 晴16 ~ 28℃ 晴19 ~ 27℃ 晴16 ~ 25℃ 晴15 ~ 26℃ 晴18 ~ 27℃ 晴18 ~ 26℃ 晴18 ~ 27℃ 晴18 ~ 27℃ 晴18 ~ 27℃ 晴17 ~ 27℃ 晴17 ~ 27℃ 晴18 ~ 28℃ 晴15 ~ 28℃ 晴17 ~ 28℃ 晴15 ~ 25℃ 多云17 ~ 27℃ 多云18 ~ 24℃ 晴17 ~ 28℃ 晴17 ~ 28℃ 晴17 ~ 24℃ 晴19 ~ 28℃ 晴15 ~ 29℃ ### • Vankoo滑雪工厂滑雪场 ### • 老码头创意园区 ### • 上海城隍庙 ### • 上海科技馆 ### • 朱家角古镇 ### • 顾村公园 ### • 豫园 ### • 田子坊 ### • 世博会 举报邮箱:kf@tianqi.com 本站部分文字内容、图片选取自网络，如侵权请联系删除，联系邮箱:kf@tianqi.com', 'score': 0.7872945, 'raw_content': None}, {'title': '上海天气预报,上海7天天气预报,上海15天天气预报,上海天气查询', 'url': 'https://www.weather.com.cn/weather/101020100.shtml', 'content': 'å\x8f°é£\x8eè·¯å¾\x84 ç©ºé\x97´å¤©æ°\x94 å\x9b¾ç\x89\x87 ä¸\x93é¢\x98 ç\x8e¯å¢\x83 æ\x97\x85æ¸¸ ç¢³ä¸\xadå\x92\x8c å\x85¨å\x9b½ å\x91¨è¾¹æ\x99¯ç\x82¹ 31/22â\x84\x83 31/23â\x84\x83 25/23â\x84\x83 26/21â\x84\x83 27/20â\x84\x83 24/22â\x84\x83 23/21â\x84\x83 å»ºè®®ç©¿ç\x9f\xadè¡«ã\x80\x81ç\x9f\xadè£¤ç\xad\x89æ¸\x85å\x87\x89å¤\x8få\xad£æ\x9c\x8dè£\x85ã\x80\x82 æ\x97 é\x9b¨ä¸\x94é£\x8eå\x8a\x9bè¾\x83å°\x8fï¼\x8cæ\x98\x93ä¿\x9dæ\x8c\x81æ¸\x85æ´\x81åº¦ã\x80\x82 æ¶\x82æ\x93¦SPFå¤§äº\x8e15ã\x80\x81PA+é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 å»ºè®®ç©¿ç\x9f\xadè¡«ã\x80\x81ç\x9f\xadè£¤ç\xad\x89æ¸\x85å\x87\x89å¤\x8få\xad£æ\x9c\x8dè£\x85ã\x80\x82 å»ºè®®ç©¿é\x95¿è¢\x96è¡¬è¡«å\x8d\x95è£¤ç\xad\x89æ\x9c\x8dè£\x85ã\x80\x82 è¾\x90å°\x84å¼±ï¼\x8cæ¶\x82æ\x93¦SPF8-12é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 å»ºè®®ç©¿é\x95¿è¢\x96è¡¬è¡«å\x8d\x95è£¤ç\xad\x89æ\x9c\x8dè£\x85ã\x80\x82 è¾\x90å°\x84å¼±ï¼\x8cæ¶\x82æ\x93¦SPF8-12é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 å»ºè®®ç©¿é\x95¿è¢\x96è¡¬è¡«å\x8d\x95è£¤ç\xad\x89æ\x9c\x8dè£\x85ã\x80\x82 è¾\x90å°\x84å¼±ï¼\x8cæ¶\x82æ\x93¦SPF8-12é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 å»ºè®®ç©¿è\x96\x84å¤\x96å¥\x97æ\x88\x96ç\x89\x9bä»\x94è£¤ç\xad\x89æ\x9c\x8dè£\x85ã\x80\x82 è¾\x90å°\x84å¼±ï¼\x8cæ¶\x82æ\x93¦SPF8-12é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 å»ºè®®ç©¿è\x96\x84å¤\x96å¥\x97æ\x88\x96ç\x89\x9bä»\x94è£¤ç\xad\x89æ\x9c\x8dè£\x85ã\x80\x82 è¾\x90å°\x84å¼±ï¼\x8cæ¶\x82æ\x93¦SPF8-12é\x98²æ\x99\x92æ\x8a¤è\x82¤å\x93\x81ã\x80\x82 # å\x91¨è¾¹å\x9c°å\x8cº | å\x91¨è¾¹æ\x99¯ç\x82¹ 2025-06-05 07:30æ\x9b´æ\x96° # å\x91¨è¾¹å\x9c°å\x8cº | å\x91¨è¾¹æ\x99¯ç\x82¹ 2025-06-05 07:30æ\x9b´æ\x96° # é«\x98æ¸\x85å\x9b¾é\x9b\x86 é\x9d\x92æµ·è¥¿å®\x81å\x87ºç\x8e°æ\x97¥æ\x99\x95æ\x99¯è§\x82 å\x85\x89ç\x8e¯é\x97ªè\x80\x80å¤©ç©º å\x8c\x85ç½\x97ä¸\x87â\x80\x9cé¦\x85â\x80\x9dç²½äº«ç«¯å\x8d\x88å¥½æ\x97¶å\x85\x89 å\x85¨å\x9b½å¤§é\x83¨æ\x99´å¤\x9aé\x9b¨å°\x91 å\x8c\x97æ\x96¹å¹²ç\x83\xadæ\x9a´æ\x99\x92å\x8d\x97æ\x96¹é\x97·ç\x83\xadé\x9a¾è\x80\x90 ## å\x85¨å\x9b½å¤§é\x83¨æ\x99´å¤\x9aé\x9b¨å°\x91 å\x8c\x97æ\x96¹å¹²ç\x83\xadæ\x9a´æ\x99\x92å\x8d\x97æ\x96¹é\x97·ç\x83\xadé\x9a¾è\x80\x90 é\x95¿æ±\x9fä¸\xadä¸\x8bæ¸¸ä»\x8aå¤©ä»\x8dä¸ºé\x99\x8dé\x9b¨æ ¸å¿\x83å\x8cº å\x8d\x8eå\x8d\x97å¤©æ°\x94é\x97·ç\x83\xadå¤\x9aå\x9c°ä½\x93æ\x84\x9fæ\x88\x96è¶\x8540â\x84\x83 ## é\x95¿æ±\x9fä¸\xadä¸\x8bæ¸¸ä»\x8aå¤©ä»\x8dä¸ºé\x99\x8dé\x9b¨æ ¸å¿\x83å\x8cº å\x8d\x8eå\x8d\x97å¤©æ°\x94é\x97·ç\x83\xadå¤\x9aå\x9c°ä½\x93æ\x84\x9fæ\x88\x96è¶\x8540â\x84\x83 å\x8d\x97æ\x96¹è¿\x9bå\x85¥é\x99\x8dé\x9b¨æ\x9c\x80å¼ºæ\x97¶æ®µ ä¸\x9cå\x8c\x97æ\x8c\x81ç»\xadæ\x99´ç\x83\xadé\x83¨å\x88\x86å\x9c°å\x8cºæ\x9c\x80é«\x98æ¸©æ\x88\x96è¶\x8530â\x84\x83 ## å\x8d\x97æ\x96¹è¿\x9bå\x85¥é\x99\x8dé\x9b¨æ\x9c\x80å¼ºæ\x97¶æ®µ ä¸\x9cå\x8c\x97æ\x8c\x81ç»\xadæ\x99´ç\x83\xadé\x83¨å\x88\x86å\x9c°å\x8cºæ\x9c\x80é«\x98æ¸©æ\x88\x96è¶\x8530â\x84\x83 # æ\x9b´å¤\x9a>>é«\x98æ¸\x85å\x9b¾é\x9b\x86 å\x8c\x85ç½\x97ä¸\x87â\x80\x9cé¦\x85â\x80\x9dç²½äº«ç«¯å\x8d\x88å¥½æ\x97¶å\x85\x89 å\x85\xadä¸\x80å\x84¿ç«¥è\x8a\x82 è\x8a±è\x8a±æ¸¸ä¹\x90å\x9b\xadä¸\xadç\x9a\x84å¿«ä¹\x90ç\x9e¬é\x97´ é\x9d\x92æµ·è¥¿å®\x81å\x87ºç\x8e°æ\x97¥æ\x99\x95æ\x99¯è§\x82 å\x85\x89ç\x8e¯é\x97ªè\x80\x80å¤©ç©º # >> ç\x94\x9fæ´»æ\x97\x85æ¸¸ å°\x8fæ»¡å\x85»ç\x94\x9f æ³¨é\x87\x8dâ\x80\x9cæ\x9cªç\x97\x85å\x85\x88é\x98²â\x80\x9d å¤§ç¾\x8eæ\x96°ç\x96\x86â\x80\x94å¸\x95ç±³å°\x94é«\x98å\x8e\x9få¥½é£\x8eå\x85\x89 #### æ\x99¯å\x8cºå¤©æ°\x94æ°\x94æ¸© æ\x97\x85æ¸¸æ\x8c\x87æ\x95° å\x85³äº\x8eæ\x88\x91ä»¬è\x81\x94ç³»æ\x88\x91ä»¬ç\x94¨æ\x88·å\x8f\x8dé¦\x88', 'score': 0.71040785, 'raw_content': None}], 'response_time': 1.07}当前上海的天气情况如下：
+
+- 温度范围：19°C 至 27°C
+- 天气状况：晴
+
+您可以通过以下链接获取更详细的上海天气预报：
+- [天气网上海天气预报](https://www.tianqi.com/shanghai/)
+- [中国天气网上海天气预报](https://www.weather.com.cn/weather/101020100.shtml)
+```
+
+现在让尝试一个需要调用搜索工具的示例：
 
 ```python
-print(agent_executor.invoke({"input": "今天上海天气怎么样"}))
-{'input': '今天上海天气怎么样', 'output': '很抱歉，我无法获取实时的天气信息。你可以访问上海市气象局的网站[这里](http://sh.cma.gov.cn/sh/tqyb/jrtq/)来查询今天的气象状况、预警信息、生活指数等。同时，该网站还提供了未来几天的天气趋势和空气质量状况，以及气象科普、气象视频、气候变化等其他相关服务和信息。'}
+print(agent_executor.invoke({"input": "张爽这个怎么样"}))
 ```
 
-我们可以查看[LangSmith跟踪](https://smith.langchain.com/public/36df5b1a-9a0b-4185-bae2-964e1d53c665/r)以确保它有效地调用了搜索工具。
+```
+{'input': '张爽这个人怎么样', 'output': '对不起，我没有找到关于“张爽”这个人的具体信息。如果您能提供更多的背景信息或者具体的领域，我可以帮助您进行更准确的搜索。'}
+```
+
+```
+> Entering new AgentExecutor chain...
+
+Invoking: `web_search` with `{'query': '张爽 人物介绍'}`
+
+
+Intelligence，用户可以使用自然语言在照片应用中搜索特定照片，还可以搜索视频片段中的特定时刻。此外，新的清理工具可以识别并移除照片背景中的干扰物体，而不会改变主体。苹果还重点介绍了一项新的生成表情符号的功能，该功能允许用户通过输入几个单词来创建自定义表情符号。生成表情符号和新的视觉智能等功能也将在稍后推出。截至发稿，苹果盘后股价微跌0.14%，报220.67美元/股。责任编辑：孙扶图片
+
+16新增相机控制功能苹果介绍，相机控制功能将于今年稍晚推出两段式快门，轻按时会自动锁定对焦和曝光，这样在调整构图时拍摄主体始终对焦清晰。发布会上展示了此次新添的功能“视觉智能”。一旦通过相机控制按钮启动相机，它便能够对相机所捕捉到的画面展开分析。例如，将镜头对准餐厅，便能提取出该餐厅的详尽信息；对准一只狗，即可显示其品种等相关信息。此外，开发人员还可以将相机控制引入Snapchat等第三方应用程
+
+SHANGHAISIXTH TONE新闻报料报料热线: 021-962866报料邮箱: news@thepaper.cn沪ICP备14003370号沪公网安备31010602000299号互联网新闻信息服务许可证：31120170006增值电信业务经营许可证：沪B2-2017116© 2014-2025 上海东方报业有限公司反馈
+
+15采用的A16仿生芯片，性能跨代提升，驱动摄影风格和相机控制等新锐拍摄功能，游戏体验跃升主机级，而且能效表现非凡，电池续航更出色。影像方面，iPhone 16系列配备4800万像素主摄像头，可以拍摄融合2400万像素照片。同时，用户可以通过这颗主摄拍摄2倍照片，还能拍摄杜比视界4K对不起，我没有找到关于“张爽”这个人的具体信息。如果您能提供更多的背景信息或者具体的领域，我可以帮助您进行更准确的搜索。
+```
 
 ## 添加记忆
 
-如前所述，此代理是无状态的。这意味着它不会记住先前的交互。要给它记忆，我们需要传递先前的`chat_history`。注意：由于我们使用的提示，它需要被称为`chat_history`。如果我们使用不同的提示，我们可以更改变量名
+如前所述，此代理是无状态的。这意味着它不会记住先前的交互。要给它记忆，需要传递先前的`chat_history`。注意：由于使用提示，
+
+它需要被称为`chat_history`。如果使用不同的提示，可以更改变量名
 
 ```python
-#示例：agent_tools_memory.py
+response = agent_executor.invoke({"input": "我是张爽", "chat_history": []})
 
-# 这里我们为chat_history传入了一个空消息列表，因为这是对话中的第一条消息
-agent_executor.invoke({"input": "hi! my name is bob", "chat_history": []})
-{'input': '你好，我的名字是Cyber', 'chat_history': [], 'output': '你好，Cyber，很高兴见到你！有什么我可以帮助你的吗？'}
-from langchain_core.messages import AIMessage, HumanMessage
-agent_executor.invoke(
-    {
-        "chat_history": [
-            HumanMessage(content="hi! my name is bob"),
-            AIMessage(content="你好Bob！我今天能帮你什么？"),
-        ],
-        "input": "我的名字是什么?",
-    }
-)
+print(response)
 ```
 
-如果我们想要自动跟踪这些消息，我们可以将其包装在一个RunnableWithMessageHistory中
+```
+{'input': '我是张爽', 'chat_history': [], 'output': '你好，张爽！有什么我可以帮助你的吗？'}
+```
 
 ```python
-#示例：agent_tools_memory_store.py
+response = agent_executor.invoke(
+    {
+        "chat_history": [
+            HumanMessage(content="我是张爽"),
+            AIMessage(content="你好，张爽！有什么我可以帮助你的吗？")
+        ],
+        "input": "我的名字是什么？"
+    }
+
+)
+
+print(response)
+```
+
+```
+{'chat_history': [HumanMessage(content='我是张爽', additional_kwargs={}, response_metadata={}), AIMessage(content='你好，张爽！有什么我可以帮助你的吗？', additional_kwargs={}, response_metadata={})], 'input': '我的名字是什么？', 'output': '你刚才告诉我你的名字是张爽。如果有其他问题或需要帮助，请告诉我！'}
+```
+
+如果想要自动跟踪这些消息，可以将其包装在一个RunnableWithMessageHistory中
+
+```python
 from langchain_community.chat_message_histories import ChatMessageHistory
-
 from langchain_core.chat_history import BaseChatMessageHistory
-
 from langchain_core.runnables.history import RunnableWithMessageHistory
 
 store = {}
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
-
     if session_id not in store:
-
         store[session_id] = ChatMessageHistory()
-
     return store[session_id]
 ```
 
-因为我们有多个输入，我们需要指定两个事项：
+需要指定两个事项：
 
 - `input_messages_key`：用于将输入添加到对话历史记录中的键。
 - `history_messages_key`：用于将加载的消息添加到其中的键。
@@ -3046,21 +3045,33 @@ agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
     get_session_history,
     input_messages_key="input",
-    history_messages_key="chat_history",
+    history_messages_key="chat_history"
 )
+
 response = agent_with_chat_history.invoke(
-    {"input": "Hi，我的名字是Cyber"},
-    config={"configurable": {"session_id": "123"}},
+    {"input": "我的名字是张爽"},
+    config={"configurable": {"session_id": "abcd123"}}
 )
-{'input': 'Hi，我的名字是Cyber', 'chat_history': [], 'output': '你好，Cyber！很高兴认识你。有什么我可以帮助你的吗？'}
-response = agent_with_chat_history.invoke(
-    {"input": "我叫什么名字?"},
-    config={"configurable": {"session_id": "123"}},
-)
-{'input': '我叫什么名字?', 'chat_history': [HumanMessage(content='Hi，我的名字是Cyber'), AIMessage(content='你好，Cyber！很高兴认识你。有什么我可以帮助你的吗？')], 'output': '你的名字是Cyber。'}
+
+print(response)
 ```
 
-LangSmith示例跟踪：https://smith.langchain.com/public/98c8d162-60ae-4493-aa9f-992d87bd0429/r
+```
+{'input': '我的名字是张爽', 'chat_history': [], 'output': '你好，张爽！很高兴认识你。有什么我可以帮助你的吗？'}
+```
+
+```python
+response = agent_with_chat_history.invoke(
+    {"input": "我的名字叫什么"},
+    config={"configurable": {"session_id": "abcd123"}}
+)
+
+print(response)
+```
+
+```
+{'input': '我的名字叫什么', 'chat_history': [HumanMessage(content='我的名字是张爽', additional_kwargs={}, response_metadata={}), AIMessage(content='你好，张爽！很高兴认识你。有什么我可以帮助你的吗？', additional_kwargs={}, response_metadata={})], 'output': '你的名字是张爽。如果还有其他问题或需要帮助，请随时告诉我！'}
+```
 
 # LangChain基于RAG实现文档问答
 
