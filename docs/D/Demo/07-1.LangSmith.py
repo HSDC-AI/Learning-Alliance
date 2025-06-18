@@ -6,8 +6,8 @@ minimax_api_key = os.getenv('MINIMAX_API_KEY')
 minimax_group_id = os.getenv('MINIMAX_GROUP_ID')  
 minimax_base_url = os.getenv('MINIMAX_BASE_URL_V1') 
 
-LANGSMITH_API_KEY = os.getenv('LANGCHAIN_SMITH_KEY') 
-LANGSMITH_ENDPOINT = os.getenv('LANGCHAIN_ENDPOINT') 
+LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY') 
+LANGSMITH_ENDPOINT = os.getenv('LANGSMITH_ENDPOINT') 
 
 os.environ['LANGSMITH_TRACING'] = "true"
 os.environ['LANGSMITH_PROJECT'] = "test-001"
