@@ -161,7 +161,70 @@ public class DemoController {
     }
 
 
+    /**
+     * 之前直接都是使用prompt在接受参数，这回改成了user后，看起来效果都是一样的，个人猜测在LLM中，prompt的优先级可能会高一些
+     * @param msg
+     * @return
+     */
+    @RequestMapping(value = "/ai/stream", produces = "text/html;charset=UTF-8")
+    public Flux<String> getStream(@RequestParam(value= "msg") String msg){
+        return chatClient.prompt().user(msg).stream().content();
+    }
+
+    /**
+     * chatModel 不支持 stream 但是可以精细化配置，而且可以切模型
+     * @param msg
+     * @return
+     */
+    @RequestMapping("/ai/chatModel")
+    public String testChatModel(@RequestParam(value = "msg") String msg){
+        ChatResponse called = chatModel.call(new Prompt(msg, ChatOptions.builder().temperature(0.8).build()));
+        return called.getResult().getOutput().getText();
+    }
+
+    /**
+     * 通过SystemPromptTemplate 创建message并替换模板中的参数，创建Prompt
+     * @param name
+     * @param hobby
+     * @return
+     */
+    @RequestMapping("/ai/chatModel2")
+    public String testChatModel2(@RequestParam(value = "name") String name,  @RequestParam(value = "hobby") String hobby){
+        String userText = "推荐上海的三种美食";
+        Message userMessage = new UserMessage(userText);
+        String systemText = "你是一个上海的Advisor，你的名字是{name}，请根据用户输入的{hobby}给出上海的三种美食推荐";
+        // 通过模板创建message，并传入参数
+        SystemPromptTemplate template = new SystemPromptTemplate(systemText);
+        Message templateMessage = template.createMessage(Map.of("user", name, "hobby", hobby));
+        Prompt prompt = new Prompt(List.of(userMessage, templateMessage));
+
+        ChatResponse called = chatModel.call(prompt);
+        List<Generation> results = called.getResults();
+        return results.stream().map(t -> t.getOutput().getText()).collect(Collectors.joining(""));
+    }
+
+
+
 }
 ```
 
 在这个简单的例子中，API扮演者agent的角色，tool 扮演者MCP server的角色，ChatClient扮演者LLM的角色，简单并且清晰的实现了MCP协议。
+
+
+| 特性 | ChatClient | ChatModel |
+|------|------------|-----------|
+| 功能定位 | 高级抽象接口，提供完整的对话功能 | 底层模型接口，直接与AI模型交互 |
+| 使用场景 | 1. 需要完整的对话上下文管理2. 需要工具集成（Tools）3. 需要流式响应4. 需要复杂的对话管理 | 1. 简单的单次请求响应2. 需要直接控制模型参数3. 需要更底层的模型访问4. 自定义对话流程 |
+| 主要特点 | 1. 内置上下文管理```// 自动维护对话历史chatClient.prompt("Hello")    .addMessage("How are you?")    .call();```2. 支持工具集成```// 集成自定义工具chatClient.prompt("Calculate 1+1")    .tools(new CalculatorTool())    .call();```3. 提供流式响应```// 流式处理响应chatClient.prompt("Tell me a story")    .stream()    .forEach(chunk -> System.out.print(chunk));```4. 更高级的API设计```// 链式调用chatClient.prompt("Hello")    .withTemperature(0.7)    .withMaxTokens(100)    .call();``` | 1. 更底层的控制```// 直接控制模型参数chatModel.generate("Hello",    Map.of("temperature", 0.7));```2. 更灵活的参数配置```// 自定义模型配置chatModel.setModel("gpt-4");chatModel.setTemperature(0.8);```3. 直接访问模型能力```// 直接调用模型方法chatModel.embed("Hello world");```4. 更简单的接口设计```// 简单的生成调用String response = chatModel.generate("Hello");``` |
+| 代码示例 | ```// 完整对话示例chatClient.prompt("Hello")    .tools(new MyTool())    .stream()    .call();``` | ```// 简单生成示例chatModel.generate("Hello");``` |
+| 适用人群 | 1. 需要快速开发AI应用2. 需要完整对话功能3. 需要工具集成能力 | 1. 需要深度定制2. 需要直接控制模型3. 需要更底层的访问 |
+
+总的来说，ChatClient更适合大多数应用场景，特别是需要完整对话功能和工具集成的场景。而ChatModel则更适合需要深度定制和直接控制模型的场景。选择哪个接口主要取决于你的具体需求：
+- 如果你需要快速开发一个功能完整的AI应用，选择ChatClient
+- 如果你需要深度定制模型行为或直接访问底层能力，选择ChatModel
+
+
+***
+
+
+
