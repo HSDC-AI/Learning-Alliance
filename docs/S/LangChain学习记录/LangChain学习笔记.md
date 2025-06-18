@@ -3551,60 +3551,46 @@ tools = [TavilySearchResults(max_results=1)]
 
 现在我们将创建要用于执行任务的执行代理。 请注意，对于此示例，我们将对每个任务使用相同的执行代理，但这并非必须如此。
 
-```
-from langchain import hub
-from langchain_openai import ChatOpenAI
-import asyncio
+```python
+from langchain_community.tools import TavilySearchResults
 from langgraph.prebuilt import create_react_agent
+from docs.S.LangChain学习记录.demo.getchat import get_key, get_chat
 
-# 从LangChain的Hub中获取prompt模板，可以进行修改
-prompt = hub.pull("wfh/react-agent-executor")
-prompt.pretty_print()
+LANGSMITH_API_KEY = get_chat('LANGSMITH_API_KEY')
 
-# 选择驱动代理的LLM，使用OpenAI的ChatGPT-4o模型
-llm = ChatOpenAI(model="gpt-4o")
-# 创建一个REACT代理执行器，使用指定的LLM和工具，并应用从Hub中获取的prompt
-agent_executor = create_react_agent(llm, tools, messages_modifier=prompt)
+# 工具
+tools = [TavilySearchResults(tavily_api_key=get_key("tavily_api_key"))]
+
+# 模型
+llm = get_chat("gpt-4o")
+
+# 创建 agent
+agent_executor = create_react_agent(llm, tools)
+
+response = agent_executor.invoke(
+    {
+        "messages": [("user", "世界首富有多少钱")]
+    }
+)
+
+print(response)
 ```
 
 ```
-================================ System Message ================================
-
-You are a helpful assistant.
-
-============================= Messages Placeholder =============================
-
-{{messages}}
-```
-
-```
-# 调用代理执行器，询问“谁是美国公开赛的冠军”
-agent_executor.invoke({"messages": [("user", "谁是美国公开赛的获胜者")]})
-```
-
-```
-{'messages': [HumanMessage(content='who is the winnner of the us open', id='7c491c9f-cdbe-4761-b93b-3e4eeb526c97'),
-              AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_MMmwmxwxRH2hrmMbuBeMGsXW', 'function': {'arguments': '{"query":"US Open 2023 winner"}', 'name': 'tavily_search_results_json'}, 'type': 'function'}]}, response_metadata={'token_usage': {'completion_tokens': 23, 'prompt_tokens': 97, 'total_tokens': 120}, 'model_name': 'gpt-4-turbo-preview', 'system_fingerprint': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run-855f7cff-62a2-4dd8-b71b-707b507b00a4-0', tool_calls=[{'name': 'tavily_search_results_json', 'args': {'query': 'US Open 2023 winner'}, 'id': 'call_MMmwmxwxRH2hrmMbuBeMGsXW'}]),
-              ToolMessage(content='[{"url": "https://www.bbc.com/sport/tennis/66766337", "content": ": Stephen Nolan goes in to find out\\nRelated Topics\\nTop Stories\\nTen Hag on Rashford plus transfer news, WSL deadline day\\nSpinner Leach doubtful for second Test in India\\nMcIlroy \'changes tune\' on LIV players\' punishment\\nElsewhere on the BBC\\nDiscover the tropical paradise of Thailand\\nFrom the secrets of the South to the mysterious North...\\n Djokovic offered to help up Medvedev when the Russian fell to the court in the third set\\nDjokovic\'s relentless returning continued to draw mistakes out of Medvedev, who was serving poorly and making loose errors, at the start of the second set.\\n It was clear to see Medvedev had needed to level by taking that second set to stand any real chance of victory and the feeling of the inevitable was heightened by the Russian needing treatment on a shoulder injury before the third set.\\n Djokovic shows again why he can never be written off\\nWhen Djokovic lost to 20-year-old Carlos Alcaraz in the Wimbledon final it felt like a changing-of-the-guard moment in the men\'s game.\\n The inside story of Putin\\u2019s invasion of Ukraine\\nTold by the Presidents and Prime Ministers tasked with making the critical decisions\\nSurvival of the wittiest!\\n"}, {"url": "https://www.usopen.org/en_US/news/articles/2023-09-10/novak_djokovic_wins_24th_grand_slam_singles_title_at_2023_us_open.html", "content": "WHAT HAPPENED: Novak Djokovic handled the weight of history to defeat Daniil Medvedev on Sunday in the 2023 US Open men\'s singles final. With a 6-3, 7-6(5), 6-3 victory, the 36-year-old won his 24th Grand Slam singles title, tying Margaret Court\'s record and bolstering his case to be considered the greatest tennis player of all time."}, {"url": "https://apnews.com/article/us-open-final-live-updates-djokovic-medvedev-8a4a26f8d77ef9ab2fb3efe1096dce7e", "content": "Novak Djokovic wins the US Open for his 24th Grand Slam title by beating Daniil Medvedev\\nNovak Djokovic, of Serbia, holds up the championship trophy after defeating Daniil Medvedev, of Russia, in the men\\u2019s singles final of the U.S. Open tennis championships, Sunday, Sept. 10, 2023, in New York. (AP Photo/Manu Fernandez)\\nDaniil Medvedev, of Russia, sits on the court after a rally against Novak Djokovic, of Serbia, during the men\\u2019s singles final of the U.S. Open tennis championships, Sunday, Sept. 10, 2023, in New York. (AP Photo/Manu Fernandez)\\nDaniil Medvedev, of Russia, sits on the court after a rally against Novak Djokovic, of Serbia, during the men\\u2019s singles final of the U.S. Open tennis championships, Sunday, Sept. 10, 2023, in New York. (AP Photo/Manu Fernandez)\\nDaniil Medvedev, of Russia, sits on the court after a rally against Novak Djokovic, of Serbia, during the men\\u2019s singles final of the U.S. Open tennis championships, Sunday, Sept. 10, 2023, in New York. Novak Djokovic, of Serbia, reveals a t-shirt honoring the number 24 and Kobe Bryant after defeating Daniil Medvedev, of Russia, in the men\\u2019s singles final of the U.S. Open tennis championships, Sunday, Sept. 10, 2023, in New York."}]', name='tavily_search_results_json', id='ca0ff812-6c7f-43c1-9d0e-427cfe8da332', tool_call_id='call_MMmwmxwxRH2hrmMbuBeMGsXW'),
-  AIMessage(content="The winner of the 2023 US Open men's singles was Novak Djokovic. He defeated Daniil Medvedev with a score of 6-3, 7-6(5), 6-3 in the final, winning his 24th Grand Slam singles title. This victory tied Margaret Court's record and bolstered Djokovic's claim to be considered one of the greatest tennis players of all time.", response_metadata={'token_usage': {'completion_tokens': 89, 'prompt_tokens': 972, 'total_tokens': 1061}, 'model_name': 'gpt-4-turbo-preview', 'system_fingerprint': None, 'finish_reason': 'stop', 'logprobs': None}, id='run-ef37a655-1ea6-470e-a310-8f125ca48015-0')]}
+{'messages': [HumanMessage(content='世界首富有多少钱', additional_kwargs={}, response_metadata={}, id='d2271b42-957b-4c3d-9a2b-5f019c5c9517'), AIMessage(content='', additional_kwargs={'tool_calls': [{'id': 'call_ak7YG4vLPT2ylQCXCscWEJ0B', 'function': {'arguments': '{"query":"current net worth of the richest person in the world"}', 'name': 'tavily_search_results_json', 'parameters': None}, 'type': 'function'}], 'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 28, 'prompt_tokens': 84, 'total_tokens': 112, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BiteZffzxaHDnbxOBQwJfrD5FhKrU', 'service_tier': None, 'finish_reason': 'tool_calls', 'logprobs': None}, id='run--f8397354-3cc6-41e7-bbcd-a676deed5731-0', tool_calls=[{'name': 'tavily_search_results_json', 'args': {'query': 'current net worth of the richest person in the world'}, 'id': 'call_ak7YG4vLPT2ylQCXCscWEJ0B', 'type': 'tool_call'}], usage_metadata={'input_tokens': 84, 'output_tokens': 28, 'total_tokens': 112, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}), ToolMessage(content='[{"title": "Who is the richest person in the world? See Elon Musk\'s net worth", "url": "https://www.statesman.com/story/news/state/2025/04/14/who-is-the-richest-person-in-the-world-wealthiest-forbes-ranking-list-2025-net-worth-elon-musk/83042795007/", "content": "## Who is the richest person in the world? Hint: He\'s a Texan\\n\\n![Tesla CEO Elon Musk attends a Cabinet meeting at the White House on March 24, 2025.]()\\n\\n**Elon Musk** holds the title of the world\'s richest person . He has a net worth of $365.3 billion as of April 2025, [according to the latest Forbes data](https://www.forbes.com/real-time-billionaires/#310717713d78). [...] |  |  |  |  |  |\\n| --- | --- | --- | --- | --- |\\n| **Rank** | **Name** | **Total net worth** | **Entity** | **Country/Region** |\\n| 1 | Elon Musk | $365.3B | Tesla, SpaceX | United States |\\n| 2 | Jeff Bezos | $198.3B | Amazon | United States |\\n| 3 | Mark Zuckerberg | $185.5B | Facebook | United States |\\n| 4 | Larry Ellison | $164.7B | Oracle | United States |\\n| 5 | Warren Buffett | $160.0B | Berkshire Hathaway | United States |\\n| 6 | Bernard Arnault & family | $150.8B | LVMH | France | [...] In 2023, Bettencourt Meyers once again surpassed Walton, who dropped to the third-place spot due to American socialite Julia Koch, who inherited Koch, Inc. ownership stakes from her late husband David Koch. Koch, 62, was estimated to be worth $74.2 billion in the latest Forbes ranking.\\n\\n## LIST: World\'s 10 wealthiest people\\n\\nAll but one of Earth\'s 10 richest people reside in the U.S. Here\'s their rankings and net worth as of April 11, as reported by Forbes:", "score": 0.8649622}, {"title": "Richest people in the world 2025 - Statista", "url": "https://www.statista.com/statistics/272047/top-25-global-billionaires/", "content": "As of March 2025, Elon Musk had a net worth valued at 328.5 billion US dollars, making him the richest man in the world.", "score": 0.850382}, {"title": "Top 10 Richest People in the World 2025: Elon Musk, Jeff Bezos ...", "url": "https://www.indmoney.com/blog/us-stocks/top-10-richest-people-in-the-world", "content": "Tesla founder Elon Musk is the richest man in the world with a net worth of $420 billion, closely followed by Jeff Bezos at $266 billion.", "score": 0.81630427}, {"title": "World\'s 10 Richest People: List Of The Wealthiest Billionaires", "url": "https://www.bankrate.com/investing/worlds-richest-people/", "content": "These billionaires reached their lofty heights through hard work, great ideas, serendipity and plenty of careful planning along the way.\\n\\nHere are the world’s 10 richest people and some of their key investments, according to the [Bloomberg Billionaires Index](https://www.bloomberg.com/billionaires/), as of June 11, 2025.\\n\\n## 1. Elon Musk: $369 billion [...] ### Editorial disclosure\\n\\nAll reviews are prepared by our staff. Opinions expressed are solely\\nthose of the reviewer and have not been reviewed or approved by any\\nadvertiser. The information, including any rates, terms and fees\\nassociated with financial products, presented in the review is accurate\\nas of the date of publication.\\n\\n# The world’s 10 richest people: The wealthiest have $100 billion or more [...] | Person | Wealth | Key investments |\\n| --- | --- | --- |\\n| **1. Elon Musk** | $369 billion | Tesla, SpaceX, Twitter (since renamed X) |\\n| **2. Mark Zuckerberg** | $245 billion | Meta Platforms |\\n| **3. Jeff Bezos** | $234 billion | Amazon, Blue Origin |\\n| **4. Larry Ellison** | $200 billion | Oracle |\\n| **5. Bill Gates** | $177 billion | Microsoft |\\n| **6. Steve Ballmer** | $163 billion | Microsoft |\\n| **7. Larry Page** | $160 billion | Alphabet |", "score": 0.7050753}, {"title": "The Top 10 Richest People In The World In 2025 - Forbes India", "url": "https://www.forbesindia.com/article/explainers/top-10-richest-people-world/85541/1", "content": "| **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\\n| --- | --- | --- | --- |\\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States | [...] | **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\\n| --- | --- | --- | --- |\\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States | [...] | **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\\n| --- | --- | --- | --- |\\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States |", "score": 0.7011614}]', name='tavily_search_results_json', id='32c7e94f-3742-436f-8286-274cca874131', tool_call_id='call_ak7YG4vLPT2ylQCXCscWEJ0B', artifact={'query': 'current net worth of the richest person in the world', 'follow_up_questions': None, 'answer': None, 'images': [], 'results': [{'url': 'https://www.statesman.com/story/news/state/2025/04/14/who-is-the-richest-person-in-the-world-wealthiest-forbes-ranking-list-2025-net-worth-elon-musk/83042795007/', 'title': "Who is the richest person in the world? See Elon Musk's net worth", 'content': "## Who is the richest person in the world? Hint: He's a Texan\n\n![Tesla CEO Elon Musk attends a Cabinet meeting at the White House on March 24, 2025.]()\n\n**Elon Musk** holds the title of the world's richest person . He has a net worth of $365.3 billion as of April 2025, [according to the latest Forbes data](https://www.forbes.com/real-time-billionaires/#310717713d78). [...] |  |  |  |  |  |\n| --- | --- | --- | --- | --- |\n| **Rank** | **Name** | **Total net worth** | **Entity** | **Country/Region** |\n| 1 | Elon Musk | $365.3B | Tesla, SpaceX | United States |\n| 2 | Jeff Bezos | $198.3B | Amazon | United States |\n| 3 | Mark Zuckerberg | $185.5B | Facebook | United States |\n| 4 | Larry Ellison | $164.7B | Oracle | United States |\n| 5 | Warren Buffett | $160.0B | Berkshire Hathaway | United States |\n| 6 | Bernard Arnault & family | $150.8B | LVMH | France | [...] In 2023, Bettencourt Meyers once again surpassed Walton, who dropped to the third-place spot due to American socialite Julia Koch, who inherited Koch, Inc. ownership stakes from her late husband David Koch. Koch, 62, was estimated to be worth $74.2 billion in the latest Forbes ranking.\n\n## LIST: World's 10 wealthiest people\n\nAll but one of Earth's 10 richest people reside in the U.S. Here's their rankings and net worth as of April 11, as reported by Forbes:", 'score': 0.8649622, 'raw_content': None}, {'url': 'https://www.statista.com/statistics/272047/top-25-global-billionaires/', 'title': 'Richest people in the world 2025 - Statista', 'content': 'As of March 2025, Elon Musk had a net worth valued at 328.5 billion US dollars, making him the richest man in the world.', 'score': 0.850382, 'raw_content': None}, {'url': 'https://www.indmoney.com/blog/us-stocks/top-10-richest-people-in-the-world', 'title': 'Top 10 Richest People in the World 2025: Elon Musk, Jeff Bezos ...', 'content': 'Tesla founder Elon Musk is the richest man in the world with a net worth of $420 billion, closely followed by Jeff Bezos at $266 billion.', 'score': 0.81630427, 'raw_content': None}, {'url': 'https://www.bankrate.com/investing/worlds-richest-people/', 'title': "World's 10 Richest People: List Of The Wealthiest Billionaires", 'content': 'These billionaires reached their lofty heights through hard work, great ideas, serendipity and plenty of careful planning along the way.\n\nHere are the world’s 10 richest people and some of their key investments, according to the [Bloomberg Billionaires Index](https://www.bloomberg.com/billionaires/), as of June 11, 2025.\n\n## 1. Elon Musk: $369 billion [...] ### Editorial disclosure\n\nAll reviews are prepared by our staff. Opinions expressed are solely\nthose of the reviewer and have not been reviewed or approved by any\nadvertiser. The information, including any rates, terms and fees\nassociated with financial products, presented in the review is accurate\nas of the date of publication.\n\n# The world’s 10 richest people: The wealthiest have $100 billion or more [...] | Person | Wealth | Key investments |\n| --- | --- | --- |\n| **1. Elon Musk** | $369 billion | Tesla, SpaceX, Twitter (since renamed X) |\n| **2. Mark Zuckerberg** | $245 billion | Meta Platforms |\n| **3. Jeff Bezos** | $234 billion | Amazon, Blue Origin |\n| **4. Larry Ellison** | $200 billion | Oracle |\n| **5. Bill Gates** | $177 billion | Microsoft |\n| **6. Steve Ballmer** | $163 billion | Microsoft |\n| **7. Larry Page** | $160 billion | Alphabet |', 'score': 0.7050753, 'raw_content': None}, {'url': 'https://www.forbesindia.com/article/explainers/top-10-richest-people-world/85541/1', 'title': 'The Top 10 Richest People In The World In 2025 - Forbes India', 'content': '| **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\n| --- | --- | --- | --- |\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States | [...] | **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\n| --- | --- | --- | --- |\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States | [...] | **Name & Rank** | **Net Worth (in $ Billions)** | **Companies/ Source of Wealth** | **Country** |\n| --- | --- | --- | --- |\n| #1 Elon Musk | $356.7 | Tesla, SpaceX, X | United States |\n| #2 Jeff Bezos | $221.0 | Amazon, Blue Origin, The Washington Post, IMDB, Audible | United States |\n| #3 Mark Zuckerberg | $216.4 | Meta Platforms, Inc. (Facebook, Instagram, WhatsApp) | United States |\n| #4 Larry Ellison | $191.4 | Oracle Corporation | United States |', 'score': 0.7011614, 'raw_content': None}], 'response_time': 4.06}), AIMessage(content='截至2025年4月，埃隆·马斯克（Elon Musk）是世界首富，他的净资产为3653亿美元。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 33, 'prompt_tokens': 1621, 'total_tokens': 1654, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'input_tokens': 0, 'output_tokens': 0, 'input_tokens_details': None}, 'model_name': 'gpt-4o', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BitefbZ2ju6whsNWfeHSlRRBYy2cC', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--5f377fa5-4e40-4639-b94d-70b8880366ec-0', usage_metadata={'input_tokens': 1621, 'output_tokens': 33, 'total_tokens': 1654, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})]}
 ```
 
 ### 定义状态 
 
-现在让我们从定义要跟踪此代理的状态开始。
+定义要跟踪此代理的状态开始。首先，需要跟踪当前计划。 将其表示为字符串列表。接下来，应该跟踪先前执行的步骤。 让其表示为元
 
-首先，我们需要跟踪当前计划。 让我们将其表示为字符串列表。
+组列表（这些元组将包含步骤及其结果）最后，需要一些状态来表示最终响应以及原始输入。
 
-接下来，我们应该跟踪先前执行的步骤。 让我们将其表示为元组列表（这些元组将包含步骤及其结果）
-
-最后，我们需要一些状态来表示最终响应以及原始输入。
-
-```
+```python
 import operator
 from typing import Annotated, List, Tuple, TypedDict
 
-
-# 定义一个TypedDict类PlanExecute，用于存储输入、计划、过去的步骤和响应
+# 定义类 用于存储输入、计划、过去的步骤和响应
 class PlanExecute(TypedDict):
     input: str
     plan: List[str]
@@ -3614,25 +3600,17 @@ class PlanExecute(TypedDict):
 
 ### 规划步骤 
 
-现在让我们考虑创建规划步骤。 这将使用函数调用来创建计划。
+现在让考虑创建规划步骤。 这将使用函数调用来创建计划。
 
-```
-from langchain_core.pydantic_v1 import BaseModel, Field
-
-
-# 定义一个Plan模型类，用于描述未来要执行的计划
+```python
+# 定义plan模型
 class Plan(BaseModel):
     """未来要执行的计划"""
-
     steps: List[str] = Field(
-        description="需要执行的不同步骤，应该按顺序排列"
+        description="需要执行的不同步骤，应该按顺序排序"
     )
-```
 
-```
-from langchain_core.prompts import ChatPromptTemplate
-
-# 创建一个计划生成的提示模板
+# 创建计划生成模版
 planner_prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -3642,180 +3620,185 @@ planner_prompt = ChatPromptTemplate.from_messages(
         ("placeholder", "{messages}"),
     ]
 )
-# 使用指定的提示模板创建一个计划生成器，使用OpenAI的ChatGPT-4o模型
-planner = planner_prompt | ChatOpenAI(
-    model="gpt-4o", temperature=0
-).with_structured_output(Plan)
-```
 
-```
-# 调用计划生成器，询问“当前澳大利亚公开赛冠军的家乡是哪里？”
-planner.invoke(
+planner = planner_prompt | llm.with_structured_output(Plan)
+
+response = planner.invoke(
     {
         "messages": [
-            ("user", "现任澳网冠军的家乡是哪里?")
+            ("user", "马云的家乡是哪")
         ]
     }
 )
+
+print(response)
 ```
 
 ```
-{'plan': ['查找2024年澳大利亚网球公开赛的冠军是谁', '查找该冠军的家乡是哪里', '用中文回答该冠军的家乡']}
+steps=['查找马云的出生地信息。', '确认马云的出生地是中国浙江省杭州市。', '得出结论：马云的家乡是浙江省杭州市。']
 ```
 
 ### 重新规划步骤 
 
-现在，让我们创建一个根据上一步结果重新制定计划的步骤。
+现在，创建一个根据上一步结果重新制定计划的步骤。
 
-```
-from typing import Union
+```python
+# 定义plan模型
+class Plan(BaseModel):
+    """未来要执行的计划"""
+    steps: List[str] = Field(
+        description="需要执行的不同步骤，应该按顺序排序"
+    )
 
-
-# 定义一个响应模型类，用于描述用户的响应
+# 定义响应模型
 class Response(BaseModel):
     """用户响应"""
-
     response: str
 
-
-# 定义一个行为模型类，用于描述要执行的行为
+# 定义要执行的行为
 class Act(BaseModel):
     """要执行的行为"""
-
     action: Union[Response, Plan] = Field(
         description="要执行的行为。如果要回应用户，使用Response。如果需要进一步使用工具获取答案，使用Plan。"
     )
 
-
-# 创建一个重新计划的提示模板
+# 创建一个重新计划的提示词模版
 replanner_prompt = ChatPromptTemplate.from_template(
-    """对于给定的目标，提出一个简单的逐步计划。这个计划应该包含独立的任务，如果正确执行将得出正确的答案。不要添加任何多余的步骤。最后一步的结果应该是最终答案。确保每一步都有所有必要的信息 - 不要跳过步骤。
-
-你的目标是：
-{input}
-
-你的原计划是：
-{plan}
-
-你目前已完成的步骤是：
-{past_steps}
-
-相应地更新你的计划。如果不需要更多步骤并且可以返回给用户，那么就这样回应。如果需要，填写计划。只添加仍然需要完成的步骤。不要返回已完成的步骤作为计划的一部分。"""
+    """
+    对于给定的目标，提出一个简单的逐步计划。这个计划应该包含独立的任务，如果正确执行将得出正确的答案。不要添加任何多余的步骤。最后一步的结果应该是最终答案。确保每一步都有所有必要的信息 - 不要跳过步骤。
+    
+    你的目标是：
+    {input}
+    
+    你的原计划是：
+    {plan}
+    
+    你目前已完成的步骤是：
+    {past_steps}
+    
+    相应地更新你的计划。如果不需要更多步骤并且可以返回给用户，那么就这样回应。如果需要，填写计划。只添加仍然需要完成的步骤。不要返回已完成的步骤作为计划的一部分。
+    """
 )
 
-# 使用指定的提示模板创建一个重新计划生成器，使用OpenAI的ChatGPT-4o模型
-replanner = replanner_prompt | ChatOpenAI(
-    model="gpt-4o", temperature=0
-).with_structured_output(Act)
+# 使用指定提示词创建一个重新计划生成器
+replanner = replanner_prompt | llm.with_structured_output(Act)
 ```
 
 ### 创建图 
 
-现在我们可以创建图了！
-
-```
-from typing import Literal
-
-
-# 定义一个异步主函数
+```python
+# 定义主函数
 async def main():
-    # 定义一个异步函数，用于执行步骤
+    # 定义执行步骤函数
     async def execute_step(state: PlanExecute):
         plan = state["plan"]
-        plan_str = "\n".join(f"{i + 1}. {step}" for i, step in enumerate(plan))
+        plan_str = "\n".join(f"P{i + 1}. {step}" for i, step in enumerate(plan))
         task = plan[0]
-        task_formatted = f"""对于以下计划：
-{plan_str}\n\n你的任务是执行第{1}步，{task}。"""
+        task_formatted = f"""
+        对于以下计划
+        {plan_str}\n\n 你的任务是执行第{1}步，{task}.
+        """
         agent_response = await agent_executor.ainvoke(
             {"messages": [("user", task_formatted)]}
         )
         return {
-            "past_steps": state["past_steps"] + [(task, agent_response["messages"][-1].content)],
+            "past_steps": state["past_steps"] + [(task, agent_response["messages"][-1].content)]
         }
 
-    # 定义一个异步函数，用于生成计划步骤
+    # 定义生成计划函数
     async def plan_step(state: PlanExecute):
-        plan = await planner.ainvoke({"messages": [("user", state["input"])]})
+        plan = await planner.ainvoke(
+            {"messages": [("user", state["input"])]}
+        )
         return {"plan": plan.steps}
 
-    # 定义一个异步函数，用于重新计划步骤
+    # 定义重新生成计划步骤
     async def replan_step(state: PlanExecute):
-        output = await replanner.ainvoke(state)
+        output = await planner.ainvoke(state)
         if isinstance(output.action, Response):
             return {"response": output.action.response}
         else:
             return {"plan": output.action.steps}
 
-    # 定义一个函数，用于判断是否结束
+    # 定义判断函数
     def should_end(state: PlanExecute) -> Literal["agent", "__end__"]:
         if "response" in state and state["response"]:
             return "__end__"
         else:
             return "agent"
-```
 
-```
-from langgraph.graph import StateGraph, START
+    # 创建一个状态图
+    workflow = StateGraph(PlanExecute)
 
-# 创建一个状态图，初始化PlanExecute
-workflow = StateGraph(PlanExecute)
+    # 添加计划节点
+    workflow.add_node("planner", plan_step)
 
-# 添加计划节点
-workflow.add_node("planner", plan_step)
+    # 添加一个步骤节点
+    workflow.add_node("agent", execute_step)
 
-# 添加执行步骤节点
-workflow.add_node("agent", execute_step)
+    # 添加重新计划生成节点
+    workflow.add_node("replan", replan_step)
 
-# 添加重新计划节点
-workflow.add_node("replan", replan_step)
+    # 添加开始和计划节点的边
+    workflow.add_edge(START, "planner")
 
-# 设置从开始到计划节点的边
-workflow.add_edge(START, "planner")
+    # 添加计划和agent的边
+    workflow.add_edge("planner", "agent")
 
-# 设置从计划到代理节点的边
-workflow.add_edge("planner", "agent")
+    # 添加agent和重新计划节点的边
+    workflow.add_edge("agent", "replan")
 
-# 设置从代理到重新计划节点的边
-workflow.add_edge("agent", "replan")
+    # 添加条件变
+    workflow.add_conditional_edges(
+        "replan",
+        should_end
+    )
 
-# 添加条件边，用于判断下一步操作
-workflow.add_conditional_edges(
-    "replan",
-    # 传入判断函数，确定下一个节点
-    should_end,
-)
+    # 编译状态图，生成可运行对象
+    app = workflow.compile()
 
-# 编译状态图，生成LangChain可运行对象
-app = workflow.compile()
-```
-
-```
-    # 将生成的图片保存到文件
+    # 保存生成的图片
     graph_png = app.get_graph().draw_mermaid_png()
-    with open("plan_execute.png", "wb") as f:
+    with open("plan.png", "wb") as f:
         f.write(graph_png)
+
+asyncio.run(main())
 ```
 
 ![img](../图片/1724582939404-0dc86760-5031-4d42-b758-76645090fc5f.png)
 
-```
-# 设置配置，递归限制为50
-config = {"recursion_limit": 50}
-# 输入数据
-inputs = {"input": "2024年巴黎奥运会100米自由泳决赛冠军的家乡是哪里?请用中文答复"}
-# 异步执行状态图，输出结果
-async for event in app.astream(inputs, config=config):
-    for k, v in event.items():
-        if k != "__end__":
-            print(v)
+```python
+# 设置递归限制
+    config = {"recursion_limit": 50}
+
+    # 定义输入
+    inputs = {"input": "xtransfer的创始人的家乡是哪？用中文回复"}
+
+    # 执行
+    async for event in app.astream(inputs, config=config):
+        for k, v in event.items():
+            if k != "__end__":
+                print(v)
 ```
 
 ```
-{'plan': ['查找2024年巴黎奥运会100米自由泳决赛冠军的名字', '查找该冠军的家乡']}
-{'past_steps': [('查找2024年巴黎奥运会100米自由泳决赛冠军的名字', '2024年巴黎奥运会男子100米自由泳决赛的冠军是中国选手潘展乐（Zhanle Pan）。')]}
-{'plan': ['查找潘展乐的家乡']}
-{'past_steps': [('查找2024年巴黎奥运会100米自由泳决赛冠军的名字', '2024年巴黎奥运会男子100米自由泳决赛的冠军是中国选手潘展乐（Zhanle Pan）。'), ('查找潘展乐的家乡', '潘展乐的家乡是浙江温州。')]}
-{'response': '2024年巴黎奥运会100米自由泳决赛冠军潘展乐的家乡是浙江温州。'}
+{'plan': ['访问xTransfer的官方网站或相关的公司介绍页面。', '查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '阅读创始人的个人简介，寻找有关其家乡的信息。', '如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '确认创始人的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。')]}
+{'plan': ['查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '阅读创始人的个人简介，寻找有关其家乡的信息。', '如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '确认创始人的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。')]}
+{'plan': ['阅读创始人的个人简介，寻找有关其家乡的信息。', '如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '确认创始人的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。')]}
+{'plan': ['如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '确认创始人的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。')]}
+{'plan': ['搜索xTransfer创始人的姓名。', '使用创始人的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '确认创始人的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。')]}
+{'plan': ['使用创始人邓国标的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '确认邓国标的家乡信息后，用中文记录下来。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('使用创始人邓国标的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '在搜索结果中，没有找到明确提到邓国标家乡的信息。搜索结果主要涉及邓国标的职业生涯和公司活动。如果需要进一步确认邓国标的家乡信息，可能需要更深入的调查或访问其他来源。')]}
+{'plan': ['联系xTransfer的公共关系或媒体联系人，询问邓国标的家乡信息。', '访问社交媒体平台，查看邓国标的个人资料或发布的内容，寻找有关其家乡的线索。', '如果以上方法无效，考虑联系相关行业的专业人士或记者，询问他们是否有关于邓国标家乡的信息。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('使用创始人邓国标的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '在搜索结果中，没有找到明确提到邓国标家乡的信息。搜索结果主要涉及邓国标的职业生涯和公司活动。如果需要进一步确认邓国标的家乡信息，可能需要更深入的调查或访问其他来源。'), ('联系xTransfer的公共关系或媒体联系人，询问邓国标的家乡信息。', "To contact xTransfer's public relations or media contact, you can reach out to Maggie Ng, the Public Relations Director. Here are her contact details:\n\n- **Email**: [maggie.ng@xtransfer.com](mailto:maggie.ng@xtransfer.com)\n- **Phone**: +852 6287 2989\n\nYou can use this information to inquire about Deng Guobiao's hometown.")]}
+{'plan': ['联系xTransfer的公共关系或媒体联系人，询问邓国标的家乡信息。']}
+{'past_steps': [('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('使用创始人邓国标的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '在搜索结果中，没有找到明确提到邓国标家乡的信息。搜索结果主要涉及邓国标的职业生涯和公司活动。如果需要进一步确认邓国标的家乡信息，可能需要更深入的调查或访问其他来源。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('访问xTransfer的官方网站或相关的公司介绍页面。', '你可以访问 [XTransfer 的官方网站](https://www.xtransfer.cn/) 来获取更多关于公司的信息。'), ('查找关于公司创始人的信息，通常在“关于我们”或“团队介绍”部分。', '请提供公司名称或官方网站的链接，以便我可以帮助您查找关于公司创始人的信息。'), ('阅读创始人的个人简介，寻找有关其家乡的信息。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找其个人简介。'), ('如果官方网站没有提供详细信息，可以搜索相关新闻报道或采访，通常会提到创始人的背景。', '请提供创始人的姓名或相关信息，以便我可以帮助您查找他们的背景信息。'), ('搜索xTransfer创始人的姓名。', 'xTransfer的创始人是邓国标。'), ('使用创始人邓国标的姓名在搜索引擎中查找相关新闻报道或采访，寻找有关其家乡的信息。', '在搜索结果中，没有找到明确提到邓国标家乡的信息。搜索结果主要涉及邓国标的职业生涯和公司活动。如果需要进一步确认邓国标的家乡信息，可能需要更深入的调查或访问其他来源。'), ('联系xTransfer的公共关系或媒体联系人，询问邓国标的家乡信息。', "To contact xTransfer's public relations or media contact, you can reach out to Maggie Ng, the Public Relations Director. Here are her contact details:\n\n- **Email**: [maggie.ng@xtransfer.com](mailto:maggie.ng@xtransfer.com)\n- **Phone**: +852 6287 2989\n\nYou can use this information to inquire about Deng Guobiao's hometown."), ('联系xTransfer的公共关系或媒体联系人，询问邓国标的家乡信息。', "To contact xTransfer's public relations or media contact, you can reach out to Maggie Ng, the Public Relations Director. Here are her contact details:\n\n- **Email**: [maggie.ng@xtransfer.com](mailto:maggie.ng@xtransfer.com)\n- **Phone**: +852 6287 2989\n\nYou can use this information to inquire about Deng Guobiao's hometown.")]}
+{'response': '邓国标的家乡是中国广东省潮州市。'}
 ```
 
 # LangGraph基于RAG构建智能客服应用
