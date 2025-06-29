@@ -2,6 +2,8 @@
 
 设计模式是软件开发中常见问题的解决方案，它们可以帮助我们写出更好的代码。以下是23种设计模式的总结和示例代码。
 
+https://www.xinbaoku.com/archive/5McLaBFN.html
+
 ## 创建型模式（5种）
 
 ### 1. 单例模式（Singleton Pattern）
