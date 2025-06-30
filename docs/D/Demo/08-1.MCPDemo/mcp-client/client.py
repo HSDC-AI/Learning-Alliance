@@ -9,7 +9,6 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain.agents import create_openai_functions_agent, AgentExecutor
 from langchain.prompts import ChatPromptTemplate
-from langchain.tools import Tool
 from langchain_mcp_adapters.tools import load_mcp_tools # type: ignore
 import os
 load_dotenv()
@@ -25,7 +24,6 @@ class MCPClient:
             openai_api_key=os.getenv("ANTHROPIC_API_KEY"),  # 这里用你的 Anthropic Key
             base_url="https://globalai.vip/v1"
         )
-        self.mcp_tools = []
         self.tools = []
         
     async def connect_to_server(self, server_script_path: str):
@@ -60,7 +58,6 @@ class MCPClient:
     async def process_query(self, query: str) -> str:
         """使用 Claude 和可用的工具处理查询"""
         
-        print("\n可用的工具：", self.mcp_tools)
         translate_prompt = ChatPromptTemplate.from_messages([
             ("system", "你是一个有用的AI助手。"),
             ("user", "{input}"),
@@ -106,6 +103,7 @@ class MCPClient:
     
 async def main():
         if len(sys.argv) < 2:
+            # uv run client.py ../weather/weather/weather.py
             print("使用方法: python client.py <path_to_server_script>")
             sys.exit(1)
         
