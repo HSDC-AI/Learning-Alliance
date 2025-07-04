@@ -4,7 +4,7 @@ import asyncio
 import json
 import re
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from openai import OpenAI
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from contextlib import AsyncExitStack
@@ -16,7 +16,7 @@ load_dotenv()
 class MCPClient:
     def __init__(self):
         self.exit_stack = AsyncExitStack() # 异步上下文管理器工具
-        self.llm = ChatOpenAI(
+        self.llm = OpenAI(
             model=os.getenv("DEEPSEEK_R1_MODEL"),
             api_key=os.getenv("DEEPSEEK_API_KEY"),  # 这里用你的 Anthropic Key
             base_url=os.getenv("DEEPSEEK_BASE_URL")
@@ -100,7 +100,7 @@ class MCPClient:
         }]
         tool_plan = await self.plan_tool_usage(messages, available_tools)
         
-        tool_outpus = []
+        tool_outputs = []
         
         #一次执行工具调用，并收集结果
         for step in tool_plan:
@@ -124,23 +124,45 @@ class MCPClient:
                 tool_name,
                 tool_args
             )
-            tool_outputs
+            tool_outputs[tool_name] = result.content[0].text
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_name,
+                "content": result.content[0].text,
+            })
+        # 调用大模型  生成回复信息 并保存结果
+        final_response = self.llm.chat.completions.create(
+            model=os.getenv("DEEPSEEK_R1_MODEL"),
+            messages=messages,
+        )
+        final_output = final_response.choices[0].message.content
+        return final_output
         
+        
+    async def chat_loop(self):
+        print("欢迎使用智能舆情分析系统")
+        print("输入你的查询或输入 'quit' 退出")
+        
+        while True:
+            try:
+                query = input("\n查询: ").strip()
+                
+                if query.lower() == "quit":
+                    print("退出系统")
+                    break
+                
+                response = await self.process_query(query)
+            except Exception as e:
+                print(f"发生错误: {e}")
+                response = "处理查询时出错，请重试"
+                
+    # async def plan_tool_usage(self, messages: List[Dict], available_tools: List[Dict]) -> List[Dict]:
+        
+            
         # 将工具输出结果写入到 md 文件中
         
 
-    
-    
 
 
-
-
-
-    def ask_who(self):
-        response = self.llm.invoke("你是谁？")
-        print(response)
-
-
-if __name__ == "__main__":
-    client = MCPClient()
-    client.ask_who()
+# if __name__ == "__main__":
+#     client = MCPClient()

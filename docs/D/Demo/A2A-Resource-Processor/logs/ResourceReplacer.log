@@ -1,0 +1,22 @@
+warning: `VIRTUAL_ENV=/Users/dian/Documents/Learning-Alliance/venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+2025-07-03 15:34:25,429 - __main__ - INFO - 📁 启动ResourceReplacer Agent服务器
+2025-07-03 15:34:25,429 - __main__ - INFO - 📍 地址: http://localhost:8003
+2025-07-03 15:34:25,429 - __main__ - INFO - 🔍 AgentCard: http://localhost:8003/.well-known/agent.json
+2025-07-03 15:34:25,429 - __main__ - INFO - 📝 任务端点: http://localhost:8003/tasks/send
+2025-07-03 15:34:25,429 - app.server - INFO - 📁 创建资源替换器服务器: localhost:8003
+2025-07-03 15:34:25,431 - app.agent - INFO - 📁 ResourceReplacer 初始化完成
+2025-07-03 15:34:25,431 - app.agent - INFO - 🔄 备份启用: True
+2025-07-03 15:34:25,431 - app.agent - INFO - 🗂️ 最大备份版本: 5
+2025-07-03 15:34:25,431 - app.agent_executor - INFO - 📁 ResourceReplacerAgentExecutor 初始化完成
+2025-07-03 15:34:25,431 - app.server - INFO - ✅ 资源替换器服务器创建完成
+2025-07-03 15:34:25,431 - app.server - INFO - 📝 Agent名称: Resource Replacer
+2025-07-03 15:34:25,431 - app.server - INFO - 🔧 支持技能: 3 个
+INFO:     Started server process [18033]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://localhost:8003 (Press CTRL+C to quit)
+INFO:     ::1:58074 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18033]

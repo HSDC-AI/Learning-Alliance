@@ -4,8 +4,8 @@ def get_chat(model):
     return ChatOpenAI(
         temperature=0,
         model=model,
-        base_url="http://10.255.4.108:8080/v1",
-        api_key="sk-3BEJwQPhsyVSzDW2C963Af69A6Bf4b608810Dd78E2Bb4452"
+        base_url="https://globalai.vip/v1",
+        api_key="sk-JcoBVO0OGkh06VMTfzSlTOOO2A5ap4AkFdNLc2qMNBoGqpsX"
     )
 
 def get_key(key):

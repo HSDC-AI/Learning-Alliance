@@ -1,11 +1,11 @@
 # 导入必要的库
-import os  # 用于操作系统相关功能，这里主要用于获取环境变量
-import requests  # 用于发送HTTP请求（本例未直接用到，但常用于数据抓取）
-from dotenv import load_dotenv  # 用于加载.env文件中的环境变量
+import os
 
-load_dotenv()  # 加载.env文件中的环境变量到系统环境中，便于后续通过os.getenv获取
+from dotenv import load_dotenv 
 
-# 联网搜索相关的LangChain工具
+load_dotenv()  
+
+
 from langchain_community.tools.tavily_search import TavilySearchResults  # Tavily搜索API封装
 from langchain_community.document_loaders import WebBaseLoader  # 用于加载网页内容
 from langchain_text_splitters import RecursiveCharacterTextSplitter  # 用于将长文本分割成小块
@@ -70,9 +70,9 @@ retruever.search_kwargs = {'k': 3}  # 每次检索返回3个最相关片段
 # ================== LLM与自定义工具 ==================
 # 初始化大语言模型（LLM），指定模型名称和API参数
 llm = ChatOpenAI(
-    model="MiniMax-Text-01",  # 使用MiniMax的文本模型
-    openai_api_key=minimax_api_key,  # 兼容OpenAI接口，传入MiniMax的API Key
-    openai_api_base=minimax_base_url  # 兼容OpenAI接口，传入MiniMax的API Base URL
+    model="MiniMax-Text-01",  
+    openai_api_key=minimax_api_key, 
+    openai_api_base=minimax_base_url 
 )
 
 from langchain.tools import Tool  # 导入Tool类，用于自定义工具
@@ -86,8 +86,6 @@ triever_tool = Tool(
 # 工具列表，包含联网搜索和自定义检索工具
 tools = [search, triever_tool]
 
-# ================== Prompt与Agent集成 ==================
-# 构建对话提示词模板，约束Agent只能通过工具获取信息，不能凭空作答
 prompt = ChatPromptTemplate.from_messages([
     ("system", "你是一个只能通过工具获取信息的助手，不能凭空作答。"),  # 系统提示，约束Agent行为
     ("user", "{input}"),  # 用户输入
@@ -97,21 +95,20 @@ print(prompt)  # 打印Prompt模板内容，便于调试
 
 # 初始化Agent执行器，将工具、LLM、Agent类型等集成
 agent_executor = initialize_agent(
-    tools=tools,  # 可用工具列表
-    llm=llm,  # 指定大语言模型
-    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,  # Agent类型：零样本推理+工具描述
-    verbose=True,  # 输出详细执行日志，便于调试
+    tools=tools, 
+    llm=llm,  
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+    verbose=True,  
     handle_parsing_errors=True  # 自动处理解析错误，防止因格式问题中断
 )
 
 print('\n---------------result---------------')
-# 调用Agent执行器，输入用户问题，返回最终结果和中间步骤
-result = agent_executor.invoke(
-    {"input": input_text},  # 用户输入
-    return_intermediate_steps=True  # 返回中间推理步骤，便于分析
-)
-print(result)  # 打印最终结果和推理过程
 
-# # 如需查看原始网页内容，可取消下行注释
-# print(docs)
+result = agent_executor.invoke(
+    {"input": input_text},  
+    return_intermediate_steps=True  
+)
+print(result) 
+
+
 

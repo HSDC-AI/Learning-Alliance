@@ -1,0 +1,18 @@
+{
+  "start_time": "2025-06-30 12:00",
+  "end_time": "2025-06-30 13:00",
+  "messages": [
+    {
+      "type": "AIMessage",
+      "content": "执行出错: 'intermediate_steps'",
+      "additional_kwargs": {}
+    }
+  ],
+  "monitoring_data": null,
+  "change_list": null,
+  "query_list": null,
+  "rga_result": null,
+  "anomaly_detected": null,
+  "root_cause_report_markdown": null,
+  "root_cause_report_html": null
+}

@@ -1,0 +1,22 @@
+warning: `VIRTUAL_ENV=/Users/dian/Documents/Learning-Alliance/venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+2025-07-03 15:34:25,847 - __main__ - INFO - 🔍 启动ResourceAnalyzer Agent服务器
+2025-07-03 15:34:25,847 - __main__ - INFO - 📍 地址: http://localhost:8001
+2025-07-03 15:34:25,848 - __main__ - INFO - 🔍 AgentCard: http://localhost:8001/.well-known/agent.json
+2025-07-03 15:34:25,848 - __main__ - INFO - 📝 任务端点: http://localhost:8001/tasks/send
+2025-07-03 15:34:25,848 - app.server - INFO - 🔍 创建资源分析器服务器: localhost:8001
+2025-07-03 15:34:25,849 - app.agent - INFO - 🔍 ResourceAnalyzer 初始化完成
+2025-07-03 15:34:25,849 - app.agent_executor - INFO - 🔍 ResourceAnalyzerAgentExecutor 初始化完成
+2025-07-03 15:34:25,849 - app.server - INFO - ✅ 资源分析器服务器创建完成
+2025-07-03 15:34:25,849 - app.server - INFO - 📝 Agent名称: Resource Analyzer
+2025-07-03 15:34:25,849 - app.server - INFO - 🔧 支持技能: 3 个
+INFO:     Started server process [18030]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://localhost:8001 (Press CTRL+C to quit)
+INFO:     ::1:58072 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:58153 - "GET / HTTP/1.1" 405 Method Not Allowed
+INFO:     ::1:58153 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18030]

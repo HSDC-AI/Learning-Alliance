@@ -48,7 +48,8 @@ agent = create_react_agent(
     tools=[book_hotel],
     prompt="""你是一个酒店预订助手。
     当用户说要预订、预定任何酒店时，你必须调用book_hotel工具来完成预订。
-    不要只是询问用户，而是要直接使用工具进行预订操作。""",
+    不要只是询问用户，而是要直接使用工具进行
+    预订操作。""",
     checkpointer=checkpointer,
 )
 

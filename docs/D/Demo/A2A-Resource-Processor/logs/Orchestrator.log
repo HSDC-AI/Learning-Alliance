@@ -1,0 +1,46 @@
+warning: `VIRTUAL_ENV=/Users/dian/Documents/Learning-Alliance/venv` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+2025-07-03 15:34:25,442 - __main__ - INFO - 🎭 启动Orchestrator Agent服务器
+2025-07-03 15:34:25,443 - __main__ - INFO - 📍 地址: http://localhost:8000
+2025-07-03 15:34:25,443 - __main__ - INFO - 🔍 AgentCard: http://localhost:8000/.well-known/agent.json
+2025-07-03 15:34:25,443 - __main__ - INFO - 📝 任务端点: http://localhost:8000/tasks/send
+2025-07-03 15:34:25,443 - app.server - INFO - 🎭 创建编排器服务器: localhost:8000
+2025-07-03 15:34:25,444 - app.agent - INFO - 🎭 ResourceProcessorOrchestrator 初始化完成
+2025-07-03 15:34:25,444 - app.agent - INFO -   📍 resource_analyzer: http://localhost:8001
+2025-07-03 15:34:25,444 - app.agent - INFO -   📍 image_processor: http://localhost:8002
+2025-07-03 15:34:25,444 - app.agent - INFO -   📍 resource_replacer: http://localhost:8003
+2025-07-03 15:34:25,444 - app.agent_executor - INFO - 🎭 OrchestratorAgentExecutor 初始化完成
+2025-07-03 15:34:25,444 - app.server - INFO - ✅ 编排器服务器创建完成
+2025-07-03 15:34:25,444 - app.server - INFO - 📝 Agent名称: Resource Processing Orchestrator
+2025-07-03 15:34:25,444 - app.server - INFO - 🔧 支持技能: 3 个
+INFO:     Started server process [18032]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://localhost:8000 (Press CTRL+C to quit)
+INFO:     ::1:58071 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:58088 - "GET / HTTP/1.1" 405 Method Not Allowed
+INFO:     ::1:58124 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     ::1:61116 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:61118 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:61120 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+2025-07-03 15:42:16,144 - app.agent_executor - INFO - 📨 收到编排任务: adaed1fe-bb88-499e-b633-612c0fae115d
+2025-07-03 15:42:16,144 - app.agent_executor - ERROR - ❌ 编排任务执行失败: 'RequestContext' object has no attribute 'request'
+INFO:     ::1:61120 - "POST / HTTP/1.1" 200 OK
+INFO:     ::1:61310 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:63200 - "GET / HTTP/1.1" 405 Method Not Allowed
+INFO:     ::1:63487 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:64251 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:64255 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:64259 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+2025-07-03 15:48:02,949 - app.agent_executor - INFO - 📨 收到编排任务: e70919ed-3c45-4706-b653-6982a6d1ad24
+2025-07-03 15:48:02,949 - app.agent_executor - ERROR - ❌ 编排任务执行失败: 'RequestContext' object has no attribute 'request'
+INFO:     ::1:64259 - "POST / HTTP/1.1" 200 OK
+INFO:     ::1:64806 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:64808 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+INFO:     ::1:64810 - "GET /.well-known/agent.json HTTP/1.1" 200 OK
+2025-07-03 15:48:19,669 - app.agent_executor - INFO - 📨 收到编排任务: 35a8fe78-bae3-49ce-a6ec-fdf48e81ff10
+2025-07-03 15:48:19,669 - app.agent_executor - ERROR - ❌ 编排任务执行失败: 'RequestContext' object has no attribute 'request'
+INFO:     ::1:64810 - "POST / HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [18032]
