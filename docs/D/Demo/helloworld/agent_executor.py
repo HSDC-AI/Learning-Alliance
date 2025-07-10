@@ -3,15 +3,6 @@ from a2a.server.events import EventQueue
 from a2a.utils import new_agent_text_message
 
 
-# --8<-- [start:HelloWorldAgent]
-class HelloWorldAgent:
-    """Hello World Agent."""
-
-    async def invoke(self) -> str:
-        return 'Hello World'
-
-
-# --8<-- [end:HelloWorldAgent]
 
 
 # --8<-- [start:HelloWorldAgentExecutor_init]

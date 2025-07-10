@@ -245,7 +245,7 @@ graph.add_node("report", report_node)
 graph.set_entry_point("agent")
 
 # 定义边
-graph.add_edge("report", END)
+graph.add_edge("report", "agent")
 
 
 # 添加条件边
@@ -260,10 +260,7 @@ def route_after_agent(state: MCPState) -> str:
 graph.add_conditional_edges(
     "agent",
     route_after_agent,
-    {
-        "report": "report",
-        "agent": "agent"
-    }
+    ["report", "agent", END]
 )
 
 # 编译图
