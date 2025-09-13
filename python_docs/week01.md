@@ -870,6 +870,131 @@ len('ABC')
 ```
 
 
+## @property
+
+``` python 
+
+
+class Student:
+    # 可读写
+    @property
+    def score(self):
+        return self._score
+    @score.setter
+    def score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer!')
+        if value < 0 or value > 100:
+            raise ValueError('score must between 0 ~ 100!')
+        self._score = value
+    
+    # 只读
+    @property
+    def birth(self):
+        return self._birth
+
+```
+
+## 多重继承
+顾名思义
+
+# 定制类
+
+## `__str__`
+
+`__str__`: 定义对象的字符串表示，返回给终端用户看的，通常是可读性强的字符串。当使用 `print()` 函数或 `str()` 函数时会调用这个方法。
+
+`__repr__`: 定义对象的"官方"字符串表示，返回给程序员看的，通常应该是明确的、无歧义的。当在交互式命令行中直接输入对象名或使用 `repr()` 函数时会调用这个方法。理想情况下，`repr()` 返回的字符串应该是一个有效的 Python 表达式，可以重新创建该对象。
+
+`__iter__`: 如果一个类想被用于for ... in循环  把自身当做迭代  不断的调用`__next__`
+
+`__next__`: 配个`__iter__`使用  迭代器的next方法
+
+`__getitem__`: 把实例当做 list使用可以使用  func[1]
+
+
+
+``` python 
+class Student:
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        return f"Student object (name: {self.name})"
+    __repr__ = __str__
+
+    def __iter__(self):
+        return self # 实例本身就是迭代对象，故返回自己
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b # 计算下一个值
+        if self.a > 100000: # 退出循环的条件
+            raise StopIteration()
+        return self.a # 返回下一个值
+
+    def __getitem__(self, n):
+        a, b = 1, 1
+        for x in range(n):
+            a, b = b, a + b
+        return a
+
+print(Student("张三"))
+```
+
+`__getattr__`:多用于动态行为 当访问对象中 不存在的属性 时调用。当你访问一个不存在的属性时，Python 会调用对象的 __getattr__(self, name) 方法。 
+
+`__call__`: 当 实例被当成函数调用 时触发。
+``` python 
+class Chain:
+    def __init__(self, path=""):
+        self._path = path
+
+    def __getattr__(self, name):
+        return Chain(f"{self._path}/{name}")
+
+    def __call__(self, *args, **kwargs):
+        return f"Requesting {self._path}, args={args}, kwargs={kwargs}"
+
+
+c = Chain()
+print(c.users.list())     # Requesting /users/list, args=(), kwargs={}
+print(c.api.v1.user(id=1))  # Requesting /api/v1/user, args=(), kwargs={'id': 1}
+```
+
+
+# 枚举
+
+``` python 
+from enum import Enum, unique
+
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+print(Month.Jan)
+print(Month.Jan.value)
+print(Month['Jan'])
+print(Month(1))
+
+@unique
+class Weekday(Enum):
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+    
+for name, member in Weekday.__members__.items():
+    print(name, member)
+
+print(Weekday.MONDAY)
+print(Weekday.MONDAY.value)
+print(Weekday['MONDAY'])
+print(Weekday(1))
+```
+
+
+
+
+
 
 
 

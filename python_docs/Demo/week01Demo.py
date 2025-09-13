@@ -696,45 +696,101 @@ print(circle_info)
 
 
 
-# from hello import test
-# test()
-print("对象类型 type(123)：", type(123))
-print("对象类型 type(\"str\")：", type("str"))
-print("对象类型 type(None)：", type(None))
-type(123)==type(456) # true
-type(123)==int # true
-type("str")==str  # true
-# 对象是否是函数
-import types
-def fn():
-    pass
+# # from hello import test
+# # test()
+# print("对象类型 type(123)：", type(123))
+# print("对象类型 type(\"str\")：", type("str"))
+# print("对象类型 type(None)：", type(None))
+# type(123)==type(456) # true
+# type(123)==int # true
+# type("str")==str  # true
+# # 对象是否是函数
+# import types
+# def fn():
+#     pass
 
-type(fn) == types.FunctionType # true
-type(abs) == types.FunctionType # true
-type(lambda x: x) == types.FunctionType # true
-type(x for x in range(10)) == types.GeneratorType # true
-type(x for x in range(10)) == types.GeneratorType # true
+# type(fn) == types.FunctionType # true
+# type(abs) == types.FunctionType # true
+# type(lambda x: x) == types.FunctionType # true
+# type(x for x in range(10)) == types.GeneratorType # true
+# type(x for x in range(10)) == types.GeneratorType # true
  
-# isinstance()
-class Animal:
-    pass
-class Dog(Animal):
-    pass
-class Husky(Dog):
-    pass
+# # isinstance()
+# class Animal:
+#     pass
+# class Dog(Animal):
+#     pass
+# class Husky(Dog):
+#     pass
 
-a = Animal()
-d = Dog()
-h = Husky()
-print(isinstance(a, Animal)) # true
-print(isinstance(d, Animal)) # true
-print(isinstance(h, Animal)) # true
-print(isinstance(h, Dog)) # true
-print(isinstance(h, Husky)) # true
-print(isinstance(a, Dog)) # false
+# a = Animal()
+# d = Dog()
+# h = Husky()
+# print(isinstance(a, Animal)) # true
+# print(isinstance(d, Animal)) # true
+# print(isinstance(h, Animal)) # true
+# print(isinstance(h, Dog)) # true
+# print(isinstance(h, Husky)) # true
+# print(isinstance(a, Dog)) # false
 
-# dir()
+# # dir()
 
-print(dir("ABC"))
-print(dir(d))
-len('ABC')
+# print(dir("ABC"))
+# print(dir(d))
+# len('ABC')
+
+
+# class Student:
+#     # 可读写
+#     @property
+#     def score(self):
+#         return self._score
+#     @score.setter
+#     def score(self, value):
+#         if not isinstance(value, int):
+#             raise ValueError('score must be an integer!')
+#         if value < 0 or value > 100:
+#             raise ValueError('score must between 0 ~ 100!')
+#         self._score = value
+    
+#     # 只读
+#     @property
+#     def birth(self):
+#         return self._birth
+
+
+# class Student:
+#     def __init__(self, name):
+#         self.name = name
+
+#     def __str__(self):
+#         return f"Student object (name: {self.name})"
+
+# print(Student("张三"))
+
+# 枚举
+from enum import Enum, unique
+
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+print(Month.Jan)
+print(Month.Jan.value)
+print(Month['Jan'])
+print(Month(1))
+
+@unique
+class Weekday(Enum):
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+    
+for name, member in Weekday.__members__.items():
+    print(name, member)
+
+print(Weekday.MONDAY)
+print(Weekday.MONDAY.value)
+print(Weekday['MONDAY'])
+print(Weekday(1))
