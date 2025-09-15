@@ -8,15 +8,15 @@ a = "asdasd"
 
 # print(a)
 
-message = "你好，{0}, 成绩提升了{1: .1f}, 继续努力".format("小名", 17.123)
-print(message)
+# message = "你好，{0}, 成绩提升了{1: .1f}, 继续努力".format("小名", 17.123)
+# print(message)
 
 
-r = 2.5
-s = 3.14 * r ** 2
+# r = 2.5
+# s = 3.14 * r ** 2
 
-circle_info = f"半径为{r}的圆的面积为{s: .2f}"
-print(circle_info)
+# circle_info = f"半径为{r}的圆的面积为{s: .2f}"
+# print(circle_info)
 
 
 # names = ['a', 'b', 'c']
@@ -769,28 +769,104 @@ print(circle_info)
 # print(Student("张三"))
 
 # 枚举
-from enum import Enum, unique
+# from enum import Enum, unique
 
-Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
-print(Month.Jan)
-print(Month.Jan.value)
-print(Month['Jan'])
-print(Month(1))
+# Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+# print(Month.Jan)
+# print(Month.Jan.value)
+# print(Month['Jan'])
+# print(Month(1))
 
-@unique
-class Weekday(Enum):
-    MONDAY = 1
-    TUESDAY = 2
-    WEDNESDAY = 3
-    THURSDAY = 4
-    FRIDAY = 5
-    SATURDAY = 6
-    SUNDAY = 7
+# @unique
+# class Weekday(Enum):
+#     MONDAY = 1
+#     TUESDAY = 2
+#     WEDNESDAY = 3
+#     THURSDAY = 4
+#     FRIDAY = 5
+#     SATURDAY = 6
+#     SUNDAY = 7
     
-for name, member in Weekday.__members__.items():
-    print(name, member)
+# for name, member in Weekday.__members__.items():
+#     print(name, member)
 
-print(Weekday.MONDAY)
-print(Weekday.MONDAY.value)
-print(Weekday['MONDAY'])
-print(Weekday(1))
+# print(Weekday.MONDAY)
+# print(Weekday.MONDAY.value)
+# print(Weekday['MONDAY'])
+# print(Weekday(1))
+
+# import pickle
+# d = dict(name='Bob', age=20, score=88)
+# dump = pickle.dumps(d)
+# print(dump)
+
+# f = open('dump.txt', 'wb')
+# pickle.dump(d, f)
+# f.close()
+
+# with open('dump.txt', 'rb') as f:
+#     d = pickle.load(f)
+#     print(d)
+
+# # json
+
+# import json
+# d = dict(name='Bob Json', age=30, score=90)
+# dump= json.dumps(d)
+# print(dump)
+
+# json_str = '{"age": 20, "score": 88, "name": "Bob Json String"}'
+# d = json.loads(json_str)
+# print(d)
+
+
+
+# class Student(object):
+#     def __init__(self, name, age, score):
+#         self.name = name
+#         self.age = age
+#         self.score = score
+        
+# def student2dict(std):
+#     return {
+#         'name': std.name,
+#         'age': std.age,
+#         'score': std.score
+#     }
+        
+# s = Student('Bob Object', 20, 88)
+# dump = json.dumps(s, default=student2dict)
+# print(dump)
+
+
+
+import os
+
+# print(f"Process {os.getpid()} start...")
+
+# pid = os.fork()
+# if pid == 0 :
+#     print(f"I am child process {os.getpid()} and my parent is {os.getppid()}.")
+# else:
+#     print(f"I {os.getpid()} just created a child process {pid}.")
+    
+
+from multiprocessing import Pool
+import os, time, random
+
+def long_time_task(name):
+    print(f"Run task {name} ({os.getpid()})")
+    start = time.time()
+    time.sleep(random.random() * 3)
+    end = time.time()
+    print(f"Task {name} runs {end - start} seconds.")
+
+if __name__ == "__main__":
+    print(f"Parent process {os.getpid()}.")
+    p = Pool(4)
+    for i in range(5):
+        p.apply_async(long_time_task, args=(i,))
+    print("Waiting for all subprocesses done...")
+    p.close()
+    p.join()
+    print("All subprocesses done.")
