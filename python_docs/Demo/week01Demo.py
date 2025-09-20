@@ -841,6 +841,7 @@ a = "asdasd"
 
 
 import os
+from typing import List
 
 # print(f"Process {os.getpid()} start...")
 
@@ -851,22 +852,60 @@ import os
 #     print(f"I {os.getpid()} just created a child process {pid}.")
     
 
-from multiprocessing import Pool
-import os, time, random
+# from multiprocessing import Pool
+# import os, time, random
 
-def long_time_task(name):
-    print(f"Run task {name} ({os.getpid()})")
-    start = time.time()
-    time.sleep(random.random() * 3)
-    end = time.time()
-    print(f"Task {name} runs {end - start} seconds.")
+# def long_time_task(name):
+#     print(f"Run task {name} ({os.getpid()})")
+#     start = time.time()
+#     time.sleep(random.random() * 3)
+#     end = time.time()
+#     print(f"Task {name} runs {end - start} seconds.")
 
-if __name__ == "__main__":
-    print(f"Parent process {os.getpid()}.")
-    p = Pool(4)
-    for i in range(5):
-        p.apply_async(long_time_task, args=(i,))
-    print("Waiting for all subprocesses done...")
-    p.close()
-    p.join()
-    print("All subprocesses done.")
+# if __name__ == "__main__":
+#     print(f"Parent process {os.getpid()}.")
+#     p = Pool(4)
+#     for i in range(5):
+#         p.apply_async(long_time_task, args=(i,))
+#     print("Waiting for all subprocesses done...")
+#     p.close()
+#     print("close")
+#     p.join()
+#     print("join")
+#     print("All subprocesses done.")
+# 多线程
+
+# import threading, time
+
+# def loop():
+#     print(f'thread {threading.current_thread().name} is running...')
+#     n = 0
+#     while n < 5:
+#         n = n + 1
+#         print(f'thread {threading.current_thread().name} >>> {n}')
+#         time.sleep(1)
+#     print(f'thread {threading.current_thread().name} ended.')
+    
+    
+# print(f'thread {threading.current_thread().name} is running...')
+# t = threading.Thread(target=loop, name='LoopThread')
+# t.start()
+# t.join()
+# print(f'thread {threading.current_thread().name} ended.')
+
+# '''
+# thread MainThread is running...
+# thread LoopThread is running...
+# thread LoopThread >>> 1
+# thread LoopThread >>> 2
+# thread LoopThread >>> 3
+# thread LoopThread >>> 4
+# thread LoopThread >>> 5
+# thread LoopThread ended.
+# thread MainThread ended.
+# '''
+## Lock
+
+
+
+

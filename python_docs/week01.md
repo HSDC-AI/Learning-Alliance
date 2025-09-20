@@ -990,8 +990,320 @@ print(Weekday.MONDAY.value)
 print(Weekday['MONDAY'])
 print(Weekday(1))
 ```
+# IO编程
+
+## 文件读写
+正常使用文件需要` f = open('/path/to/file', 'r')`之后一定要 ` f.close()` 或者使用`with`方式读取 无需close、
+
+普通文件 - f: `open('/Users/michael/test.jpg', 'rb')`  
+
+二进制文件 - rb: `open('/Users/michael/test.jpg', 'rb')`
+
+字符编码 - gbk: `open('/Users/michael/gbk.txt', 'r', encoding='gbk')`
+
+读取size个字节的内容: `read(size)`
+
+读取一行的内容: `readline()`
+
+写文件: `f.write('Hello, world!')` 
+
+``` python 
+with open('/path/to/file', 'r') as f:
+    print(f.read())
+
+read(size)方法
+
+``` python
+## StringIO
+很多时候读取的不一定是文件也可能是内存中的读写
+from io import StringIO
+f = StringIO('Hello!\nHi!\nGoodbye!')
+    while True:
+        s = f.readline()
+        if s == '':
+            break
+        print(s.strip())
+
+# Hello!
+# Hi!
+# Goodbye!
+
+```
+## BytesIO
+二进制数据
+
+``` python 
+from io import BytesIO
+f = BytesIO()
+f.write('中文'.encode('utf-8'))
+# 6
+print(f.getvalue())
+# b'\xe4\xb8\xad\xe6\x96\x87'
+
+```
+## 序列化
+也有三方库使用，这里只做简单参考
+``` python 
+import pickle
+d = dict(name='Bob', age=20, score=88)
+dump = pickle.dumps(d)
+print(dump)
+
+f = open('dump.txt', 'wb')
+pickle.dump(d, f)
+f.close()
+
+with open('dump.txt', 'rb') as f:
+    d = pickle.load(f)
+    print(d)
+
+# json
+
+import json
+d = dict(name='Bob Json', age=30, score=90)
+dump= json.dumps(d)
+print(dump)
+
+json_str = '{"age": 20, "score": 88, "name": "Bob Json String"}'
+d = json.loads(json_str)
+print(d)
 
 
+
+class Student(object):
+    def __init__(self, name, age, score):
+        self.name = name
+        self.age = age
+        self.score = score
+        
+def student2dict(std):
+    return {
+        'name': std.name,
+        'age': std.age,
+        'score': std.score
+    }
+        
+s = Student('Bob Object', 20, 88)
+dump = json.dumps(s, default=student2dict)
+print(dump)
+```
+
+# 进程和线程
+# 进程
+进程线程提速的原理就是  系统会快速切换每个正在执行的线程，如果是多核CPU可一实现真正的并发
+如果是单核，提速的位置是在非CPU执行任务方面（比如网络请求的等待时间，I/O 密集）其实就是将资源的使用率提高了
+`getppid()`: 可以拿到父进程的ID。
+
+``` python 
+import os
+
+print(f"Process {os.getpid()} start...")
+
+pid = os.fork()
+if pid == 0 :
+    print(f"I am child process {os.getpid()} and my parent is {os.getppid()}.")
+else:
+    print(f"I {os.getpid()} just created a child process {pid}.")
+    
+
+```
+
+## Pool
+需要启动大量的子进程，可以使用进程池的方式进行批量创建子进程
+对`Pool`对象调用`join()` 方法会等待所有子进程执行完毕，调用`join()`之前必须先调用`close()`, 掉用`close()`之后就不能继续添加新的`Process`了
+
+``` python 
+from multiprocessing import Pool
+import os, time, random
+
+def long_time_task(name):
+    print(f"Run task {name} ({os.getpid()})")
+    start = time.time()
+    time.sleep(random.random() * 3)
+    end = time.time()
+    print(f"Task {name} runs {end - start} seconds.")
+
+if __name__ == "__main__":
+    print(f"Parent process {os.getpid()}.")
+    p = Pool(4)
+    for i in range(5):
+        p.apply_async(long_time_task, args=(i,))
+    print("Waiting for all subprocesses done...")
+    p.close()
+    print("close")
+    p.join()
+    print("join")
+    print("All subprocesses done.")
+
+# Parent process 76657.
+# Waiting for all subprocesses done...
+# Run task 0 (76660)
+# Run task 1 (76659)
+# Run task 2 (76661)
+# Run task 3 (76662)
+# Task 3 runs 0.9405360221862793 seconds.
+# Run task 4 (76662)
+# Task 2 runs 1.2899131774902344 seconds.
+# Task 1 runs 2.1461241245269775 seconds.
+# Task 4 runs 1.2402539253234863 seconds.
+# Task 0 runs 2.2287752628326416 seconds.
+# All subprocesses done.
+
+```
+注意 0、1、2、3 是立即执行的  因为我们设置的 `Poll(4)` 4个任务其中一个完成之后才会继续
+
+## 子进程
+
+``` python 
+```
+
+## 多线程
+多任务可以由多进程完成，也可以一个进程多线程完成
+一个进程至少会有一个线程
+
+线程是操作系统直接支持的执行单元， python也是 并且他是真正的 Posix Thread  而不是模拟出来的
+
+Python 变一般用`threading` 的高级模块  他是对 `_thread`进行了封装，大多数情况下都能使用这个`threading`高级模块
+
+``` python 
+
+import threading, time
+
+def loop():
+    print(f'thread {threading.current_thread().name} is running...')
+    n = 0
+    while n < 5:
+        n = n + 1
+        print(f'thread {threading.current_thread().name} >>> {n}')
+        time.sleep(1)
+    print(f'thread {threading.current_thread().name} ended.')
+    
+    
+print(f'thread {threading.current_thread().name} is running...')
+t = threading.Thread(target=loop, name='LoopThread')
+t.start()
+t.join()
+print(f'thread {threading.current_thread().name} ended.')
+
+# thread MainThread is running...
+# thread LoopThread is running...
+# thread LoopThread >>> 1
+# thread LoopThread >>> 2
+# thread LoopThread >>> 3
+# thread LoopThread >>> 4
+# thread LoopThread >>> 5
+# thread LoopThread ended.
+# thread MainThread ended.
+```
+系统默认会启动一个 `MainThread` 的主线程，使用`current_thread()`可以回去当前线程的名字
+
+我们在上面的代码 中使用了  `LoopThread`命名的子线程进行执行任务
+
+
+## Lock
+Lock 多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份copy存在每个进程中，互不影响
+
+多线程中 所有变量都是线程共享的，所以任何一个变量，都是可以被任何一个线程修改，因此，线程之间共享数据最大的危险在于多个线程同时修改一个变量的时候，把内容改乱了
+
+因此产生了Lock的存在
+
+``` python 
+balance = 0
+lock = threading.Lock()
+
+def change_it(n):
+    # 先存后取，结果应该为0:
+    global balance
+    balance = balance + n
+    balance = balance - n
+
+
+def run_thread(n):
+    for i in range(100000):
+        # 先要获取锁:
+        lock.acquire()
+        try:
+            # 放心地改吧:
+            change_it(n)
+        finally:
+            # 改完了一定要释放锁:
+            lock.release()
+
+```
+# 网络协议
+`IPv4`: 32位整数，字符串格式如 `192.168.0.1`（按8位分组显示）
+
+`IPv6`: 64位证书，`IPv4`的升级版，格式如 `2001:0db8:85a3:0042:1000:8a2e:0370:7334`
+
+TCP协议的特点
+- 建立在IP协议之上
+- 提供可靠连接：通过握手建立连接
+- 数据完整性: 对数据包编号，确保顺序接收
+- 错误恢复：自动重发丢失的数据包
+
+协议层接口
+```
+HTTP、SMTP 等应用层协议
+    ↓
+TCP协议
+    ↓
+IP协议
+```
+
+TCP 报文组成
+- 传输数据
+- 源IP地址 + 目标IP地址
+- 源端口号 + 目标端口号
+
+端口的作用
+- **程序区分**: 区分同一台计算机上的不同网络程序
+- **唯一标识**: 每个网络程序申请唯一端口号
+- **通信基础**: 网络通信需要 IP地址 + 端口号 的组合
+- **多连接支持**: 一个进程可同时与多台计算机建立连接
+
+## 网络协议总结
+
+### 🔗 **基础关系**
+**所有协议都基于TCP**：HTTP、HTTPS、SSE、WebSocket都建立在可靠的TCP连接之上
+
+### 📋 **协议特性对比**
+
+| 协议 | 协议标识符 | 协议性质 | 通信方式 | 连接特点 | 主要用途 |
+|------|------------|----------|----------|----------|----------|
+| **HTTP** | `http://` | 应用层协议 | 请求-响应 | 短连接 | 网页浏览、API调用 |
+| **HTTPS** | `https://` | HTTP+TLS加密 | 请求-响应 | 短连接 | 安全的网页浏览 |
+| **SSE** | `http://` / `https://` | 基于HTTP的技术 | 单向推送 | 长连接 | 实时通知、状态更新 |
+| **WebSocket** | `ws://` / `wss://` | 独立应用层协议 | 双向通信 | 长连接 | 聊天、游戏、实时协作 |
+
+### 🏗️ **协议栈结构**
+```
+┌─────────────────────────────────────┐
+│  HTTP  │ HTTPS │  SSE  │ WebSocket  │ ← 应用层
+│http:// │https://│ http://│ws://wss:// │ ← 协议标识
+├────────┼───────┼───────┼────────────┤
+│   -    │  TLS  │   -   │    TLS     │ ← 安全层  
+├────────┼───────┼───────┼────────────┤
+│        TCP (传输层)                  │
+├─────────────────────────────────────┤
+│        IP (网络层)                   │
+└─────────────────────────────────────┘
+```
+
+### 🎯 **核心要点**
+1. **TCP是基础**：所有这些协议都依赖TCP的可靠传输
+2. **协议标识**：每个协议都有自己的URL方案标识符
+3. **HTTP系列**：HTTP/HTTPS/SSE都使用http(s)://标识
+4. **WebSocket独特**：有专属的ws://和wss://标识符
+5. **安全版本**：HTTPS用https://，WebSocket Secure用wss://
+
+### 💡 **简记口诀**
+- **HTTP** (`http://`)：传统网页，一问一答
+- **HTTPS** (`https://`)：HTTP加锁，安全第一  
+- **SSE** (`http(s)://`)：服务器推送，单向长连
+- **WebSocket** (`ws://wss://`)：实时双向，游戏聊天
+
+
+方法返回数据和客户端的额地址与端口 这样服务器收到数据后 直接调用就可以啊数据用UDOP发送给客户端  注意这里审掉了
 
 
 
@@ -1000,3 +1312,4 @@ print(Weekday(1))
 
 ``` python 
 ```
+
